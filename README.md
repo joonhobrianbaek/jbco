@@ -1,6 +1,8 @@
-# JBCO AI Arena
+# JBCO · After Hours
 
-A pixel basketball arena for a five-person AI team. Requires Node.js 20 or later; no application dependencies or installation step.
+A full-screen basketball practice arena with original photorealistic athlete assets, a projected hardwood court, dimensional backboards/supports/nets, dribbling and a repeating approach/jump/dunk/landing sequence. The athletes are animated image sprites, not fully rigged 3D human models. Their design draws on contrasting basketball body types rather than claiming an official athlete affiliation.
+
+Requires Node.js 20 or later. No application dependency installation.
 
 ```sh
 cd /workspace/jbco
@@ -8,6 +10,8 @@ npm run check
 npm start
 ```
 
-The server listens on port 3000 (override with `PORT`). Open it through your development environment's port forwarding. The interface supports task assignment, filtering, manual progress/completion, deletion, and browser-local persistence. Tasks are stored in localStorage on the current browser origin; they are not shared or backed up. AI services are not connected and no tasks are transmitted to providers. Muse is represented as a video search/management role.
+Default port 3000; override with `PORT=3001 npm start`. The `public/` directory also deploys directly to GitHub Pages. Assets use relative URLs for repository-path hosting.
 
-Character and court artwork is original inline SVG/CSS. Google Fonts are optional; system fonts work offline. Respect reduced motion preferences, or toggle motion in the footer.
+Click an athlete or the bottom roster to assign a task. The top-right 업무 button opens the collapsed task board. Tasks persist in localStorage on the current browser origin; they are not shared or backed up. All five provider roles remain available in the assignment form. AI services are not connected and tasks are not transmitted. Progress and completion are manual. Motion can be paused, reduced-motion preferences are respected, and fullscreen is available where supported.
+
+Artwork: original generated athlete sprite images; court, arena, lighting, hoops and basketballs rendered in Canvas. No external image or font requests.
