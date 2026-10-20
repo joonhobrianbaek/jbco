@@ -1,1 +1,14 @@
-{"name":"jbco-arena","version":"0.1.0","private":true,"type":"module","scripts":{"start":"node server.mjs","check":"node --check server.mjs && node --check public/app.js && node --check public/motion.js"},"engines":{"node":">=20"}}
+{
+  "name": "jbco-arena",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check public/app.js && node --check public/motion.js && node --check public/lab.js && node --check public/lab-motion.js",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
