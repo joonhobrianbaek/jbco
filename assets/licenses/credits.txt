@@ -1,0 +1,27 @@
+BB Motion Lab — asset credits
+
+MODEL
+Microsoft Rocketbox Avatar Library: Sports_Male_04
+Copyright (c) 2020 Microsoft. MIT License.
+Upstream: https://github.com/microsoft/Microsoft-Rocketbox
+Pinned commit: 0943055db6ec570bcef9f2c8b41c9e5467c808f9
+Original FBX, body/head diffuse and normal maps adapted to GLB/PBR; textures downsampled for web delivery; animations retargeted. This is a generic licensed avatar, not a scanned or endorsed NBA player.
+Full license: ROCKETBOX-MIT.txt
+
+RECORDED MOTION
+CMU Graphics Lab Motion Capture Database:
+  06_15 — basketball: dribble, shoot
+  124_03 — Basketball Shoot
+Original recording rate: 120 fps. Retargeted export: 60 fps.
+BVH conversion by Bruce Hahne (2010), mirrored by una-dinosauria/cmu-mocap.
+Pinned commit: 09a07f54f3bbb58797325f009282d0b2048a2871
+Usage statement: no restrictions on research or commercial use; the BVH converter places no additional restrictions.
+The data used in this project was obtained from mocap.cs.cmu.edu. The database was created with funding from NSF EIA-0196217.
+Full conversion notes and usage statement: CMU-READMEFIRST.txt
+
+PROCESSING AND LIMITS
+Recorded body motion is retargeted to an 80-bone skin-weighted mesh. Wrist orientation is stabilized to its forearm; fingers are in the model's neutral pose because CMU did not capture finger articulation. Ball motion, rim/net response and the short end-to-start loop transition are authored corrections, not recorded ball or finger capture. Retargeted clips are study material, not NBA 2K assets or motion captured from James Harden.
+
+RENDERER
+Three.js 0.186.1, MIT; see ../../vendor/THREE-LICENSE.txt.
+BB logo: original user-supplied BB_favicon_64x64.png from joonhobrianbaek/bb-favicon.
