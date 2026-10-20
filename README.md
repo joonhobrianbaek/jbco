@@ -1,6 +1,6 @@
 # JBCO · After Hours
 
-A full-screen basketball practice arena with original photorealistic athlete assets, a projected hardwood court, dimensional backboards/supports/nets, dribbling a repeating approach/jump/dunk/landing sequence, and a Booker-inspired orange-uniform shooting guard with a jump-shot arc and net response. The athletes are animated image sprites, not fully rigged 3D human models. Their design draws on contrasting basketball body types rather than claiming an official athlete affiliation.
+A full-screen basketball practice arena with original photorealistic athlete assets, a projected hardwood court, dimensional backboards/supports/nets, dribbling a repeating approach/jump/dunk/landing sequence, a Booker-inspired orange-uniform shooting guard, a bearded guard repeating step-back threes from beyond the arc, and a Lillard-inspired red-uniform point guard shooting deep threes at the opposite basket. Shot arcs and net responses are staggered across players. The athletes are animated image sprites, not fully rigged 3D human models. Their design draws on contrasting basketball body types rather than claiming an official athlete affiliation.
 
 Requires Node.js 20 or later. No application dependency installation.
 
