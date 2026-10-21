@@ -1,6 +1,6 @@
 # BB Office
 
-A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, illustrated collectible-style staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
+A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, seated adult 3D staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
 
 Requires Node.js 20 or later. No application dependency installation.
 
@@ -49,3 +49,9 @@ The bottom department dock opens workspaces for finance/reconciliation, labor/op
 Personal project addresses are not bundled in public code. A `#proposal=` setup link imports a Claude project URL into this browser, then clears the fragment; fragments are not included in website HTTP requests. This only configures a shortcut and does not authenticate, submit a request or grant access to a project.
 
 The office’s original procedural people have been removed. Five transparent illustrated figures are now rendered as sprites in the 3D room, preserving the approved design and clothing. They are 2D artwork, not rigged animated 3D bodies; camera-facing poses gently move with the motion control. Loading the artwork is required before the office loading screen clears.
+
+## Seated adult staff (A direction)
+
+The main office now renders actual seated 3D people inspired by option A of people-study.html, replacing the illustrated standing sprites. This is a real-time interpretation with simpler geometry and materials, not a pixel-identical reproduction of the generated design study. Heads, facial features, swept hair, sleeves, hands/fingers and footwear are modeled in geometry; premium staff have knit bump detail and a subtle watch, with plain basics for the other staff. Characters sit in ergonomic chairs with hands over keyboards and small head/finger motions; reduced motion and pause remain supported.
+
+Workstations are angled to expose seated side views, with open steel legs for clear lower-body silhouettes. The staff close-up uses 2.2× zoom; home restores the room. Static parts are merged by material within each animated group, keeping the five people near 100 meshes in total. The character atlas is no longer loaded. Department destinations, personal URLs, local tasks and left-monitor layout are retained.
