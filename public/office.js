@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
-import {agents,taskSnapshot} from './app.js?v=office3';
+import {agents,taskSnapshot} from './app.js?v=office4';
 const $=s=>document.querySelector(s),V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch{$('#loading').classList.add('ready');$('#error').hidden=false;throw new Error('Office requires WebGL 2');}
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;$('#office').append(renderer.domElement);
