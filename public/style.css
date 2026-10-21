@@ -7,3 +7,6 @@
 a.roster-player{text-decoration:none;cursor:pointer}#service-fields input{display:block;width:100%;margin-top:7px;background:#152219;color:#d7e0d4;border:1px solid #adc3a52b;border-radius:4px;padding:10px;font:11px Arial,sans-serif}#copy-fallback p{font-size:11px;line-height:1.8;color:#a5baa7}#copy-text{height:240px}#copy-service{font-size:12px;color:#d2dfbf;padding:10px;text-decoration:none}
 
 #staff-view{width:44px;font-size:11px}
+
+.closet-link{font-size:11px;color:#b2c4b5;text-decoration:none;white-space:nowrap}
+#display-layout{width:auto;margin:0;padding:7px 9px;background:#25332cba;border-color:#a1b5a530;color:#b2c4b5;border-radius:5px;font-size:10px}.left-monitor footer{left:auto;right:30px;width:min(880px,calc(100% - 60px));margin:0}.left-monitor #roster [data-service=gemini]{order:0}.left-monitor #roster [data-service=copilot]{order:1}.left-monitor #roster [data-service=muse]{order:2}.left-monitor #roster [data-service=claude]{order:3}.left-monitor #roster [data-service=gpt]{order:4}@media(max-width:740px){.header-actions{gap:8px}.left-monitor footer{left:16px;right:16px;width:auto}.left-monitor #roster [data-service=gpt]{order:0}.left-monitor #roster [data-service=claude]{order:1}.left-monitor #roster [data-service=muse]{order:2}.left-monitor #roster [data-service=gemini]{order:3}.left-monitor #roster [data-service=copilot]{order:4}}
