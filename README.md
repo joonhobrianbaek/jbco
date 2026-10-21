@@ -109,3 +109,19 @@ Muse is a single chief of staff. Its board stores the owner's priorities locally
 The left wall has one Mona Lisa and one Basquiat Self-Portrait, each rendered using a local image at its original aspect ratio. Artist/source/rights information is in `public/assets/licenses/mona-lisa-credits.txt` and `basquiat-credits.txt`; the Basquiat artwork is not covered by the code or avatar licenses.
 
 Validation includes employee/team count and legacy task attribution tests, plus Chromium checks for project-specific staff links, per-employee assignment, chief notes and task listing, restoring stored data, meeting moves without cloning, responsive cards, loaded artwork textures and grounded lounge legs.
+
+## Team navigation and Mona Lisa dashboard
+
+Floating head-height staffing signs have been removed. Muted floor zones, inlaid names in the aisles, and small brass-colored plates attached to the desks identify departments. Clicking a zone/name opens that department's existing staff/task controls; Muse opens the chief-of-staff board. Pointer hover strengthens the matching floor outline. Employee desk clicks retain their project/service routing.
+
+The Mona Lisa frame opens `대표 대시보드`: recorded total/queued/active/done task counts, department headcounts and unfinished work, the chief's current owner note, and links to departments, the chief, meeting room and complete work board. All counts come from existing local work records, with empty states when none exist. The work sidebar has a keyboard-accessible dashboard shortcut as well. Basquiat remains a painting rather than another navigation control. Browser validation covers picking each floor label, selecting the painting, actual task counts and dashboard destinations, responsive layout and preservation of the nine existing employees.
+
+## Open office, camera fit and bounded movement
+
+The opaque exterior walls are removed. Art and the pinboard stand on floor-mounted frames, the pantry shelves have supports, and the owner's low cabinet keeps its identity without a tall rear wall. Interior partitions use lighter glass. Horizontal orbit remains unrestricted, so the back of the office can be inspected too.
+
+Overview/reset fits the actual L-shaped office footprint into the space between the header, footer and right-hand controls. It chooses an elevation for the viewport aspect ratio, then fits and centers the orthographic view. Resizing recomputes this overview; manual orbit and close-up views keep their chosen framing.
+
+Staff hands now use separate desk, mouse, lap, book and meeting poses with actual arm lengths and retained palm orientation. Working staff feet are also grounded. `staff-motion.js` serializes movement to one actor at a time: rise, walk along fixed aisles, and sit. Meeting participant changes queue real rig movement instead of teleporting the actor. The glass door opens during meeting transfers. One lounge employee occasionally moves between the sofa and the empty beanbag. Pausing, reduced-motion mode and hidden tabs stop the visual clock. These are visual staff routines; they do not submit AI work or invent model execution status.
+
+Navigation tests sample routes from all shared workstations to every meeting seat against padded table footprints. Browser checks cover real skinned walking/returning and lounge round trips, floor contact, queued transitions, pause, multiple viewport fits, reverse orbit, correct team picking and the Mona Lisa dashboard.

@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {meetingPath} from '../public/staff-routes.js';
+// The table geometry is the navigation constraint, not the particular waypoint sequence.
+const tables=[{x:3.9,z:-4.3,w:3.8,d:1.4},...[-6,-2.4,.9].flatMap(x=>[-1.8,1.65].map(z=>({x:x-.55,z:z-1.375,w:1.1,d:2.75})))];
+test('meeting routes clear the actual table footprints for every shared workstation and seat',()=>{for(const x of [-6.75,-3.15,.15])for(const z of [-1.8,1.65])for(let seat=0;seat<4;seat++){const path=meetingPath({x,z},seat);assert.deepEqual(meetingPath({x,z},seat,true),path.slice().reverse());for(let i=1;i<path.length;i++)for(let n=0;n<=30;n++){const t=n/30,px=path[i-1][0]*(1-t)+path[i][0]*t,pz=path[i-1][1]*(1-t)+path[i][1]*t;assert.ok(px>=-9.1&&px<=14.9&&pz>=-6.1&&pz<=6.1);for(const table of tables)assert.ok(!(px>table.x-.15&&px<table.x+table.w+.15&&pz>table.z-.15&&pz<table.z+table.d+.15),JSON.stringify({seat,px,pz,table}));}}});
