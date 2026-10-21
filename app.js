@@ -1,5 +1,5 @@
-import {defaultServices,serviceUrl} from './services.js?v=office4';
-import {categories,defaultContext,handoffMarkdown} from './workspace.js?v=office4';
+import {defaultServices,serviceUrl} from './services.js?v=office5';
+import {categories,defaultContext,handoffMarkdown} from './workspace.js?v=office5';
 const $=s=>document.querySelector(s);
 const agents=[{id:'gpt',name:'GPT',role:'메인 업무',primary:true,color:'#99c5ae',initial:'G'},{id:'claude',name:'Claude',role:'메인 업무',primary:true,color:'#d3a58a',initial:'C'},{id:'gemini',name:'Gemini',role:'리서치 보조',color:'#96b9d5',initial:'G'},{id:'muse',name:'Muse',role:'영상 자료 보조',color:'#b9aad4',initial:'M'},{id:'copilot',name:'Copilot',role:'코딩 보조',color:'#d0c18f',initial:'C'}];
 export {agents};
