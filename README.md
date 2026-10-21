@@ -17,3 +17,13 @@ Click a desk or employee in the bottom roster to assign a task. The 업무 butto
 The BB brand image is the original BB_favicon_64x64.png from joonhobrianbaek/bb-favicon, copied unchanged to public/brand.png. Office geometry, materials and textures are generated locally. Three.js 0.186.1 is vendored under public/vendor with its MIT license; no external runtime fonts, scripts or images are required.
 
 Earlier basketball motion experiments remain at `lab.html` for reference, separate from the office. Their assets, source attribution, reproduction scripts and eight regression tests are retained. See public/assets/licenses/credits.txt and the lab's asset-source link for licensing details.
+
+## Work context and manual handoff
+
+The task board includes five work categories and starter briefs for reconciliation, spot billing, labor analysis, forecasting/productivity and process automation. GPT and Claude remain flexible main agents; new general assignments and templates default to Claude. Existing browser tasks keep their IDs, owners and status, and appear under Other until newly categorized tasks are created.
+
+“업무 맥락 · 협업 설정” holds an editable, browser-local summary (`jbco-context`). Public defaults contain only general work practices, with no company amounts, contacts or the uploaded source document. They are background guidance, not a verified live business record.
+
+Each task's 인수인계 dialog stores results/files, checks/unknowns and next steps. Import .md/.txt notes up to 40KB as literal text; results are limited to 12,000 characters. Save changes the displayed owner and updates desk assignment counts while retaining the task status. Download exports the current draft and saved common context as OFFICE_HANDOFF.md for manual sharing with Claude or GPT; download alone does not save or transfer ownership. No provider is invoked, no instructions in imported text execute, and no cloud/account synchronization occurs. Closing a dialog without saving discards the draft. Browser storage errors are reported and cannot guarantee persistence.
+
+The main view keeps branding to a small muted BB icon. Framed prints, lounge textiles and a warm reading lamp add detail without covering the office with introductory copy; collaboration controls stay inside the task board.

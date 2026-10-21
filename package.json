@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check server.mjs && node --check public/app.js && node --check public/motion.js && node --check public/lab.js && node --check public/lab-motion.js && node --check public/recorded-player.js && node --check public/office.js",
+    "check": "node --check server.mjs && node --check public/app.js && node --check public/motion.js && node --check public/lab.js && node --check public/lab-motion.js && node --check public/recorded-player.js && node --check public/office.js && node --check public/workspace.js",
     "test": "node --test test/*.test.mjs"
   },
   "engines": {
