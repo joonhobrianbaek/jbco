@@ -1,6 +1,6 @@
 # BB Office
 
-A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. The office includes individual desks, seated animated staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
+A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, seated animated staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
 
 Requires Node.js 20 or later. No application dependency installation.
 
