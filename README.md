@@ -97,3 +97,15 @@ Write a shared objective, optionally choose an existing department project, and 
 Validated in Chromium: three lounge guests, moving meeting participants, cross-provider context, minimum two participants, browser persistence, Markdown download, responsive dialog and absence of page errors.
 
 Lounge seating uses a separate two-bone leg solve rather than the workstation pose. Each actor retains its actual thigh/calf lengths, knees project beyond the furniture front, and ankle targets sit 12 cm above the floor to allow for the shoe geometry. The sofa occupants sit nearer the cushion edge; the occupied beanbag has a lower seat and its back follows the guest's facing direction. Browser checks cover all six ankles, knee clearance, and pose stability while gestures/blinks play.
+
+## AI departments, employees and chief of staff (current)
+
+AI provider IDs now identify departments rather than individual actors. `public/employees.js` defines nine unique employees: three each in GPT and Claude, and one each in Gemini, Copilot and Muse. Each main department has three different source faces and roles. The 3D actors, desk project links, task assignments and department cards use stable employee IDs while existing saved tasks/projects/meetings retain their provider IDs. Old department-level tasks count against one representative, not every colleague. Employee tasks retain their department; handoff updates both identifiers. No additional model downloads are needed.
+
+Six workstations sit in the shared office and Muse has a smaller desk next to the owner. The two lounge guests are actual GPT/Claude employees. Meeting representatives move their existing rigs into meeting seats, so the one-person free teams are never duplicated between locations. Department cards list staff roles and open matching configured project links; 업무 분야 projects remain available in the task sidebar. This is visual staffing and manual work routing, not extra subscriptions or concurrent model execution.
+
+Muse is a single chief of staff. Its board stores the owner's priorities locally in `jbco-chief-notes`, lists actual unfinished tasks, and links to GPT/Claude departments, the meeting room, task board and the existing Muse.ai video-service destination. It does not claim that Muse.ai generates text, reads private chats, or autonomously coordinates other providers.
+
+The left wall has one Mona Lisa and one Basquiat Self-Portrait, each rendered using a local image at its original aspect ratio. Artist/source/rights information is in `public/assets/licenses/mona-lisa-credits.txt` and `basquiat-credits.txt`; the Basquiat artwork is not covered by the code or avatar licenses.
+
+Validation includes employee/team count and legacy task attribution tests, plus Chromium checks for project-specific staff links, per-employee assignment, chief notes and task listing, restoring stored data, meeting moves without cloning, responsive cards, loaded artwork textures and grounded lounge legs.
