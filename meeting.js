@@ -1,5 +1,5 @@
-import {defaultServices,serviceUrl} from './services.js?v=office12';
-import {projectDestination,meetingProjects} from './departments.js?v=office12';
+import {defaultServices,serviceUrl} from './services.js?v=office13';
+import {projectDestination,meetingProjects} from './departments.js?v=office13';
 const names={gpt:'GPT',claude:'Claude',gemini:'Gemini',copilot:'Copilot'};
 const defaults={gpt:'분석·대안 제안',claude:'초안 작성·종합',gemini:'근거·반례 검토',copilot:'구현·검증'};
 const $=s=>document.querySelector(s);
