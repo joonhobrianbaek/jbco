@@ -1,6 +1,6 @@
 # BB Office
 
-A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, seated animated staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
+A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, illustrated collectible-style staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
 
 Requires Node.js 20 or later. No application dependency installation.
 
@@ -38,6 +38,14 @@ Staff use original stylized mini-character geometry: oversized expressive faces,
 
 ## Illustrated team closet
 
-`characters.html` provides a 2D design-preview wardrobe with three illustrated outfit presets per employee (Soft, Street, After Hours). Each selection is independent and persists in `jbco-wardrobe`; resetting restores premium staff to After Hours and basic staff to Soft. The bundled generated artwork is displayed as individual portrait crops. This preview does not replace or retexture the office’s procedural 3D models.
+`characters.html` provides a 2D design-preview wardrobe with three illustrated outfit presets per employee (Soft, Street, After Hours). Each selection is independent and persists in `jbco-wardrobe`; resetting restores premium staff to After Hours and basic staff to Soft. The bundled generated artwork is displayed as individual portrait crops. Wardrobe selections are preview-only and do not change the office artwork yet. The office now uses an approved illustrated figure atlas rather than the earlier procedural human models.
 
 The monitor selector defaults to Left Monitor (`jbco-display-layout`): on wide screens, the main GPT/Claude controls and illustrated portraits sit nearest the right edge, toward the center monitor. The office roster follows the same placement. Standard restores the regular order; smaller screens prioritize primary staff first to keep them reachable. Layout and outfit settings remain browser-local.
+
+## Departments and project destinations
+
+The bottom department dock opens workspaces for finance/reconciliation, labor/operations, purchasing/approvals and development/automation. Each workspace can save multiple named tasks with its own AI and HTTPS project/conversation URL in `jbco-projects`. Opening a project is a direct link without copying. 업무 기록 creates a local task linked to that workspace; 이어서 작업 copies its context and opens the saved project as long as its assigned AI still matches, otherwise the current AI service shortcut is used. Existing tasks remain intact.
+
+Personal project addresses are not bundled in public code. A `#proposal=` setup link imports a Claude project URL into this browser, then clears the fragment; fragments are not included in website HTTP requests. This only configures a shortcut and does not authenticate, submit a request or grant access to a project.
+
+The office’s original procedural people have been removed. Five transparent illustrated figures are now rendered as sprites in the 3D room, preserving the approved design and clothing. They are 2D artwork, not rigged animated 3D bodies; camera-facing poses gently move with the motion control. Loading the artwork is required before the office loading screen clears.
