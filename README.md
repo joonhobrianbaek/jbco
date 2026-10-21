@@ -58,7 +58,7 @@ Workstations are angled to expose seated side views, with open steel legs for cl
 
 ## One-person textured model review
 
-`model-review.html` evaluates a real skin-weighted Microsoft Rocketbox Male_Adult_02 model (MIT) at one office workstation. The same model now supplies all five main-office employees. This is a more realistic candidate, not a recreation of the generated A illustration. The page includes desk/face/hands/side cameras, orbit/zoom, pause/reduced motion and an earlier procedural-model comparison at the same desk.
+`model-review.html` evaluates a real skin-weighted Microsoft Rocketbox Male_Adult_02 model (MIT) at one office workstation. This model remains the single-person review reference; the main office uses distinct models described below. This is a more realistic candidate, not a recreation of the generated A illustration. The page includes desk/face/hands/side cameras, orbit/zoom, pause/reduced motion and an earlier procedural-model comparison at the same desk.
 
 The 14 MiB GLB embeds five color/normal/alpha textures, 80 bones, three skinned primitives, two eyelid blendshapes, a keyed seated pose and a separate blink animation. Arm and leg targets are authored, not motion capture. It uses 2048px color maps and 1024px normal/alpha maps. Full attribution and the MIT license live in `public/assets/licenses/`. Asset-loading failures show an error, rather than silently substituting the earlier model.
 
@@ -69,4 +69,19 @@ python3 scripts/fetch_office_avatar_sources.py /tmp/office-avatar-source
 blender -b -t 2 --python scripts/build_office_avatar.py -- --sources /tmp/office-avatar-source --output /tmp/office-seated.glb
 ```
 
-The main office now loads the approved textured avatar once and clones five independent skeletons and animation mixers. Body materials have restrained per-employee color tints; geometry and textures are shared to avoid five asset downloads. The procedural people are retained only behind the explicit comparison button on model-review.html.
+The earlier shared-avatar implementation has been superseded by the distinct team below. The procedural people are retained only behind the explicit comparison button on model-review.html.
+
+## Distinct team and private office
+
+The main office now uses five different licensed Rocketbox source models for the AI staff, plus a sixth Business_Male_02 model for the owner. Source IDs and file checksums are in `scripts/team-avatar-sources.json`; full model mapping and MIT attribution are in `public/assets/licenses/team-avatar-credits.txt`. The owner has a swept-back scalp and navy suit as requested, representing a style rather than a photo-based likeness. Each rig's seated leg and arm targets account for its own segment lengths. Six web-optimized assets total about 16 MiB, comparable to the previous single unoptimized model.
+
+A private glass office extends the right-hand side without removing the meeting room or lounge. It includes a wider desk, three monitors, visitor seating, cabinetry and plants. `내 방` frames the private office; `나` frames the owner avatar; clicking the owner's desk also frames the private office. The normal room view is reframed for the extension. Staff/project links and browser-local work records remain unchanged. The one-person model-review page retains the earlier reference model.
+
+Rebuild any team member after fetching sources:
+
+```sh
+python3 scripts/fetch_team_avatar_sources.py /tmp/office-team-source
+blender -b -t 2 --python scripts/build_office_avatar.py -- --sources /tmp/office-team-source/Business_Male_02 --model Business_Male_02 --web --slickback --output /tmp/owner.glb
+```
+
+Use each mapped source directory/model for other staff; omit `--slickback` except for the owner.
