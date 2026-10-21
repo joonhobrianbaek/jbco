@@ -15,7 +15,8 @@ GLB conversion with embedded textures. No motion capture is used here.
 This is a generic licensed human model, not an AI-generated model and not
 a reproduction of the A design illustration. It is a realism-oriented
 candidate for evaluating actual face/clothing detail in the browser.
-Main office staff are unchanged by this review page.
+The model also supplies the five main office employees, with independent
+skin rigs and per-employee body-material color tints.
 
 Reproduction inputs and SHA-256 checksums: scripts/office-avatar-sources.json
 Builder: scripts/build_office_avatar.py
