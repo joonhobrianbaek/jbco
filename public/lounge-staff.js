@@ -11,11 +11,29 @@ function reach(worker,side,target){
   joint.quaternion.copy(joint.parent.getWorldQuaternion(new T.Quaternion()).invert().multiply(world));joint.updateWorldMatrix(false,true);
  }
 }
+// Solve seated legs from their real segment lengths, with knees forward and ankles above the floor.
+function seatLeg(worker,side){
+ const bone=n=>worker.bones.get(('Bip01 '+side+' '+n).replace(/[^a-z0-9]/gi,'').toLowerCase());
+ const thigh=bone('Thigh'),calf=bone('Calf'),foot=bone('Foot');
+ const hip=thigh.getWorldPosition(v()),knee=calf.getWorldPosition(v()),ankle=foot.getWorldPosition(v());
+ const upper=hip.distanceTo(knee),lower=knee.distanceTo(ankle),footRotation=foot.getWorldQuaternion(new T.Quaternion());
+ const localHip=worker.person.worldToLocal(hip.clone());
+ const target=worker.person.localToWorld(v(localHip.x,0,worker.activity==='gaming'?.46:.38));target.y=.12;
+ const direction=target.clone().sub(hip),distance=T.MathUtils.clamp(direction.length(),Math.abs(upper-lower)+.001,upper+lower-.003);direction.normalize();target.copy(hip).addScaledVector(direction,distance);
+ const forward=v(0,0,1).transformDirection(worker.person.matrixWorld);
+ const bend=forward.addScaledVector(direction,-forward.dot(direction)).normalize();
+ const along=(upper*upper-lower*lower+distance*distance)/(2*distance);
+ const bendHeight=Math.sqrt(Math.max(0,upper*upper-along*along));
+ const desiredKnee=hip.clone().addScaledVector(direction,along).addScaledVector(bend,bendHeight);
+ function aim(joint,child,point){const origin=joint.getWorldPosition(v()),from=child.getWorldPosition(v()).sub(origin).normalize(),to=point.clone().sub(origin).normalize();const q=joint.getWorldQuaternion(new T.Quaternion()).premultiply(new T.Quaternion().setFromUnitVectors(from,to));joint.quaternion.copy(joint.parent.getWorldQuaternion(new T.Quaternion()).invert().multiply(q));joint.updateWorldMatrix(false,true);}
+ aim(thigh,calf,desiredKnee);aim(calf,foot,target);
+ foot.quaternion.copy(foot.parent.getWorldQuaternion(new T.Quaternion()).invert().multiply(footRotation));foot.updateWorldMatrix(false,true);
+}
 export function createLoungeStaff(scene,detail,assets){
  return [
-  {asset:'muse',x:7.25,z:2.98,y:.1,angle:Math.PI/2,activity:'conversation'},
-  {asset:'copilot',x:7.25,z:4.22,y:.1,angle:Math.PI/2,activity:'reading'},
-  {asset:'gemini',x:3.8,z:3,y:-.15,angle:-Math.PI/2,activity:'gaming'}
+  {asset:'muse',x:7.03,z:2.98,y:.1,angle:Math.PI/2,activity:'conversation'},
+  {asset:'copilot',x:7.03,z:4.22,y:.1,angle:Math.PI/2,activity:'reading'},
+  {asset:'gemini',x:4.02,z:3,y:-.08,angle:-Math.PI/2,activity:'gaming'}
  ].map((config,i)=>{
   const seat=new T.Group();seat.position.set(config.x,config.y,config.z);seat.rotation.y=config.angle;scene.add(seat);
   const w=detail.createDetailedStaff(seat,assets[config.asset],{paid:false},i+2);w.person.position.z=0;
@@ -39,6 +57,7 @@ export function animateLoungeStaff(w,time){
  w.mixer.setTime(time+w.index*.37);for(const [bone,q] of w.base)bone.quaternion.copy(q);
  const head=w.bones.get('bip01head');if(head){head.rotateY(Math.sin(time*.6+w.index)*.12);head.rotateX((w.activity==='gaming'?.16:0)+Math.sin(time*.9+w.index)*.035);}
  w.person.updateWorldMatrix(true,true);
+ for(const side of ['L','R'])seatLeg(w,side);
  const talk=w.activity==='conversation',read=w.activity==='reading',game=w.activity==='gaming';
  for(const [side,sign] of [['L',1],['R',-1]]){
   const gesture=talk&&side==='L';
