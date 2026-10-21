@@ -1,6 +1,6 @@
-import {projectDestination} from './departments.js?v=office7';
-import {defaultServices,serviceUrl} from './services.js?v=office7';
-import {categories,defaultContext,handoffMarkdown} from './workspace.js?v=office7';
+import {projectDestination} from './departments.js?v=office8';
+import {defaultServices,serviceUrl} from './services.js?v=office8';
+import {categories,defaultContext,handoffMarkdown} from './workspace.js?v=office8';
 const $=s=>document.querySelector(s);
 const agents=[{id:'gpt',paid:true,name:'GPT',role:'메인 업무',primary:true,color:'#99c5ae',initial:'G'},{id:'claude',paid:true,name:'Claude',role:'메인 업무',primary:true,color:'#d3a58a',initial:'C'},{id:'gemini',name:'Gemini',role:'리서치 보조',color:'#96b9d5',initial:'G'},{id:'muse',paid:true,name:'Muse',role:'영상 자료 보조',color:'#b9aad4',initial:'M'},{id:'copilot',name:'Copilot',role:'코딩 보조',color:'#d0c18f',initial:'C'}];
 export {agents};
