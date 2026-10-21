@@ -5,3 +5,5 @@
 
 .brand{opacity:.48;transition:opacity .2s}.brand:hover,.brand:focus-visible{opacity:1}.brand img{width:26px;height:26px;border-radius:8px}.local-mode{opacity:.6}
 a.roster-player{text-decoration:none;cursor:pointer}#service-fields input{display:block;width:100%;margin-top:7px;background:#152219;color:#d7e0d4;border:1px solid #adc3a52b;border-radius:4px;padding:10px;font:11px Arial,sans-serif}#copy-fallback p{font-size:11px;line-height:1.8;color:#a5baa7}#copy-text{height:240px}#copy-service{font-size:12px;color:#d2dfbf;padding:10px;text-decoration:none}
+
+#staff-view{width:44px;font-size:11px}
