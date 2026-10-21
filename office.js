@@ -1,9 +1,9 @@
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
-import {agents,taskSnapshot} from './app.js?v=office2';
+import {agents,taskSnapshot} from './app.js?v=office3';
 const $=s=>document.querySelector(s),V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch{$('#loading').classList.add('ready');$('#error').hidden=false;throw new Error('Office requires WebGL 2');}
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;$('#office').append(renderer.domElement);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;$('#office').append(renderer.domElement);
 const scene=new T.Scene();scene.background=new T.Color('#17201f');scene.fog=new T.Fog('#17201f',45,80);const camera=new T.OrthographicCamera(-15,15,10,-10,.1,120);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minZoom=.65;controls.maxZoom=2.5;controls.minPolarAngle=.28;controls.maxPolarAngle=Math.PI*.47;controls.maxTargetRadius=12;
 function reset(){camera.position.set(17,18,23);camera.zoom=1;controls.target.set(0,.1,0);controls.update();camera.updateProjectionMatrix();}reset();$('#reset-view').onclick=reset;
 function resize(){const a=innerWidth/innerHeight,size=a<1?21/a:18.5;camera.left=-size*a/2;camera.right=size*a/2;camera.top=size/2;camera.bottom=-size/2;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);}addEventListener('resize',resize);resize();
@@ -18,7 +18,7 @@ function planeShadow(parent,x,z,width,depth,opacity=.15){const c=document.create
 let seed=32;function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;}
 const woodCanvas=document.createElement('canvas');woodCanvas.width=1024;woodCanvas.height=256;const wc=woodCanvas.getContext('2d');wc.fillStyle='#9d7851';wc.fillRect(0,0,1024,256);for(let i=0;i<2200;i++){const y=random()*256;wc.strokeStyle=i%2?'#e1be8d16':'#4d321a15';wc.lineWidth=.4+random();wc.beginPath();wc.moveTo(0,y);wc.bezierCurveTo(250,y+random()*7,650,y-random()*7,1024,y);wc.stroke();}const woodTex=new T.CanvasTexture(woodCanvas);woodTex.colorSpace=T.SRGBColorSpace;woodTex.anisotropy=4;const wood=mat('#ffffff',.47,{map:woodTex});
 const fc=document.createElement('canvas');fc.width=fc.height=1024;const fx=fc.getContext('2d');fx.fillStyle='#d7d5c6';fx.fillRect(0,0,1024,1024);for(let i=0;i<13000;i++){fx.fillStyle=i%3?'#aaa79520':'#ffffff30';fx.fillRect(random()*1024,random()*1024,random()*2+.4,random()*2+.4);}fx.strokeStyle='#969b8f24';for(let n=0;n<1024;n+=128){fx.beginPath();fx.moveTo(n,0);fx.lineTo(n,1024);fx.moveTo(0,n);fx.lineTo(1024,n);fx.stroke();}const floorTex=new T.CanvasTexture(fc);floorTex.colorSpace=T.SRGBColorSpace;floorTex.anisotropy=4;
-scene.add(new T.HemisphereLight('#e9f0e8','#72806b',2.1));const sun=new T.DirectionalLight('#fff0d1',3.1);sun.position.set(-7,15,-8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-16,right:16,top:16,bottom:-16,near:.5,far:45});sun.shadow.normalBias=.025;sun.shadow.bias=-.0002;sun.shadow.radius=3;scene.add(sun);const fill=new T.DirectionalLight('#d1e7ed',.9);fill.position.set(8,9,12);scene.add(fill);
+scene.add(new T.HemisphereLight('#e9f0e8','#72806b',1.8));const sun=new T.DirectionalLight('#fff0d1',2.8);sun.position.set(-7,15,-8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-16,right:16,top:16,bottom:-16,near:.5,far:45});sun.shadow.normalBias=.025;sun.shadow.bias=-.0002;sun.shadow.radius=3;scene.add(sun);const fill=new T.DirectionalLight('#d1e7ed',.9);fill.position.set(8,9,12);scene.add(fill);
 // Cutaway architectural shell: open front and right sides keep every desk visible.
 box(scene,dark,[0,-.24,0],[18.7,.48,12.7]);box(scene,mat('#e5e0ce',.55,{map:floorTex}),[0,-.025,0],[18.25,.10,12.25]);box(scene,wall,[-9,1.43,0],[.18,2.9,12.2]);box(scene,wall,[0,.35,-6],[18.2,.7,.16]);box(scene,wall,[0,2.88,-6],[18.2,.17,.18]);
 const glass=new T.MeshPhysicalMaterial({color:'#b7d8cd',roughness:.12,metalness:.03,transparent:true,opacity:.18,side:T.DoubleSide,depthWrite:false});
@@ -45,7 +45,21 @@ box(scene,mat('#aaad94',1),[6.1,.045,3.7],[4.8,.025,3.8]);const sofa=new T.Group
 const coffee=cyl(scene,wood,[5.45,.42,3.6],.78,.78,.09);for(const x of [5.0,5.9])box(scene,steel,[x,.22,3.6],[.055,.43,.6]);box(scene,cream,[5.5,.49,3.6],[.33,.035,.42]);cyl(scene,cream,[5.19,.52,3.53],.065,.055,.13);cyl(scene,cream,[5.74,.52,3.37],.065,.055,.13);chair(scene,4.6,4.8,-.5);
 // Reception shelf and original BB wall sign.
 box(scene,wood,[-5.55,.55,4.7],[4.7,1.05,.78]);box(scene,cream,[-5.55,1.11,4.7],[4.82,.09,.88]);for(const x of [-7,-5.6,-4.2])box(scene,steel,[x,.55,5.1],[.015,.85,.01]);
-new T.TextureLoader().load('./brand.png',tex=>{tex.colorSpace=T.SRGBColorSpace;const sign=new T.Mesh(new T.PlaneGeometry(.58,.58),new T.MeshBasicMaterial({map:tex}));sign.position.set(-5.55,.64,5.101);scene.add(sign);});plant(scene,-7.3,4.8,.6);
+new T.TextureLoader().load('./brand.png',tex=>{tex.colorSpace=T.SRGBColorSpace;const sign=new T.Mesh(new T.PlaneGeometry(.36,.36),new T.MeshBasicMaterial({map:tex,color:'#c2cec4',transparent:true,opacity:.65}));sign.position.set(-5.55,.64,5.101);scene.add(sign);});plant(scene,-7.3,4.8,.6);
+// Quiet architectural details: framed art, warm reading lamp and soft textiles.
+for(const z of [-1.7,1.1]){
+  const frame=new T.Group();frame.position.set(-8.88,1.87,z);frame.rotation.y=Math.PI/2;scene.add(frame);
+  box(frame,wood,[0,0,0],[1.42,1.64,.07]);box(frame,cream,[0,0,.041],[1.31,1.53,.018]);
+  const art=document.createElement('canvas');art.width=256;art.height=320;const ctx=art.getContext('2d');ctx.fillStyle='#e7e0cd';ctx.fillRect(0,0,256,320);
+  ctx.fillStyle=z<0?'#7c8c74':'#b69a7a';ctx.beginPath();ctx.arc(127,125,77,Math.PI,0);ctx.lineTo(204,262);ctx.lineTo(50,262);ctx.fill();
+  ctx.fillStyle='#c8b994';ctx.fillRect(z<0?30:142,192,83,91);
+  const texture=new T.CanvasTexture(art);texture.colorSpace=T.SRGBColorSpace;const print=new T.Mesh(new T.PlaneGeometry(1.12,1.34),new T.MeshStandardMaterial({map:texture,roughness:1}));print.position.z=.055;frame.add(print);
+}
+cyl(scene,steel,[8.26,.045,2.1],.30,.30,.07);beam(scene,steel,[8.26,.08,2.1],[8.26,2.05,2.1],.023);
+cyl(scene,mat('#ded6bd',.95),[8.26,1.98,2.1],.25,.43,.46);
+const glow=new T.MeshStandardMaterial({color:'#fff1cf',emissive:'#ffca79',emissiveIntensity:.7,roughness:1});cyl(scene,glow,[8.26,1.744,2.1],.38,.38,.015);
+const readingLight=new T.PointLight('#ffd69d',2.4,3.5,2);readingLight.position.set(8.26,1.65,2.1);scene.add(readingLight);
+for(const [x,z,color] of [[7.1,2.92,'#7c8b72'],[7.15,4.18,'#d5c3a3']]){const pillow=ellipsoid(scene,mat(color,1),[x,.91,z],[.18,.28,.25]);pillow.rotation.z=.22;}
 // Individual workstations. Monitors show only local assignments, not invented AI output.
 const desks=[],workers=[],screenRecords=[];const positions=[[-3.8,1.55],[.3,1.55],[-6,-1.8],[-2.8,-1.8],[.4,-1.8]];
 function screenTexture(agent,count){const c=document.createElement('canvas');c.width=512;c.height=320;const cx=c.getContext('2d');cx.fillStyle='#142922';cx.fillRect(0,0,512,320);cx.fillStyle=agent.color;cx.font='600 38px Arial';cx.fillText(agent.name,36,63);cx.fillStyle='#749589';cx.font='13px Arial';cx.fillText(agent.primary?'MAIN WORKSPACE':'SUPPORT WORKSPACE',36,91);cx.fillStyle='#c5d8c5';cx.font='28px Arial';cx.fillText(String(count).padStart(2,'0')+'  assigned',36,154);for(let i=0;i<3;i++){cx.fillStyle=i%2?'#2d4940':'#264238';cx.fillRect(36,190+i*29,420-i*53,9);}const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;return tex;}
