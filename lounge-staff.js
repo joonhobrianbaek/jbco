@@ -29,14 +29,13 @@ function seatLeg(worker,side){
  aim(thigh,calf,desiredKnee);aim(calf,foot,target);
  foot.quaternion.copy(foot.parent.getWorldQuaternion(new T.Quaternion()).invert().multiply(footRotation));foot.updateWorldMatrix(false,true);
 }
-export function createLoungeStaff(scene,detail,assets){
+export function createLoungeStaff(scene,workers){
  return [
-  {asset:'muse',x:7.03,z:2.98,y:.1,angle:Math.PI/2,activity:'conversation'},
-  {asset:'copilot',x:7.03,z:4.22,y:.1,angle:Math.PI/2,activity:'reading'},
-  {asset:'gemini',x:4.02,z:3,y:-.08,angle:-Math.PI/2,activity:'gaming'}
+  {employeeId:'gpt-creative',x:7.03,z:2.98,y:.1,angle:Math.PI/2,activity:'conversation'},
+  {employeeId:'claude-review',x:7.03,z:4.22,y:.1,angle:Math.PI/2,activity:'reading'},
  ].map((config,i)=>{
   const seat=new T.Group();seat.position.set(config.x,config.y,config.z);seat.rotation.y=config.angle;scene.add(seat);
-  const w=detail.createDetailedStaff(seat,assets[config.asset],{paid:false},i+2);w.person.position.z=0;
+  const w=workers.find(w=>w.employee.id===config.employeeId);seat.userData.agent=w.employee.id;seat.add(w.person);w.person.position.z=0;
   w.activity=config.activity;w.base=[...w.bones.values()].map(b=>[b,b.quaternion.clone()]);
   if(config.activity==='reading'){
    const book=new T.Mesh(new T.BoxGeometry(.32,.025,.23),new T.MeshStandardMaterial({color:'#315e59',roughness:.9}));book.position.set(0,.75,-.27);book.rotation.x=.18;seat.add(book);
