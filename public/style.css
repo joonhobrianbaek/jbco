@@ -15,3 +15,9 @@ a.roster-player{text-decoration:none;cursor:pointer}#service-fields input{displa
 #owner-view{width:44px;font-size:11px}
 
 #owner-profile{width:44px;font-size:11px}
+
+#meeting-dialog{width:min(740px,94vw);max-height:88dvh;overflow:auto}#meeting-dialog input:not([type=checkbox]),#meeting-dialog select{width:100%;margin-top:8px;padding:11px;border:1px solid #adc3a52b;background:#152219;color:#d7e0d4;border-radius:4px}#meeting-dialog textarea{height:110px}#meeting-dialog h2{margin:5px 0}#meeting-dialog .meeting-note,#meeting-progress,#meeting-status{font-size:12px;line-height:1.8;color:#b3c6b9}#meeting-members{display:flex;gap:15px;flex-wrap:wrap;margin:16px 0}#meeting-members label{display:flex;align-items:center;gap:6px;margin:0}#meeting-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.meeting-card{padding:14px;border:1px solid #9db3a436;border-radius:8px;background:#21352c}.meeting-card h3{margin:0 0 12px}.meeting-card button{padding:10px;margin:8px 0 14px;border:1px solid #9db3a436;background:#354d40;color:#d4e2cf;border-radius:5px;cursor:pointer}#meeting-dialog .desk-header button{border:0;background:none;color:#d4e2cf;font-size:25px}#meeting-copy textarea{height:220px}@media(max-width:600px){#meeting-results{grid-template-columns:1fr}}
+
+#meeting-dialog .desk-header{position:sticky;top:-29px;z-index:2;background:#1d2b24;padding:12px 0;margin-top:-12px;border-bottom:1px solid #9db3a436}
+
+.view-controls{align-items:flex-end}.view-controls #lounge-view,.view-controls #meeting-open{width:58px;white-space:nowrap;font-size:11px}

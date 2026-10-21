@@ -85,3 +85,13 @@ blender -b -t 2 --python scripts/build_office_avatar.py -- --sources /tmp/office
 ```
 
 Use each mapped source directory/model for other staff; omit `--slickback` except for the owner.
+
+## Lounge and collaboration room
+
+Three additional lounge guests reuse the team's licensed rigs without new downloads. They converse, read a physical book, or play a handheld game on a beanbag. Arm targets use the existing bone lengths; head/gesture motion and blinks pause with the office controls and reduced-motion preference. The sofa now faces the coffee table.
+
+`회의` or clicking the meeting room opens a browser-local collaboration board. Two to four distinct text AI participants can have separate roles and actual pasted results. Their existing avatars move from their desks into opposing meeting seats; removing a participant restores their desk position. GPT and Claude are the default pair. Muse remains available through its regular video-service shortcut rather than being presented as a conversational text model.
+
+Write a shared objective, optionally choose an existing department project, and use an AI's copy/open button. Paste the prepared context into that service, then paste its real answer back into the board. Each next brief includes registered results from the other participants, their roles, and the owner's decision. Matching project links are used for that project's provider; other participants use configured service links. Clipboard failure exposes selectable text. Results, roles and decisions persist in `jbco-meeting`; Markdown export provides a portable record. No model output or execution status is fabricated. This version does not send requests to model APIs or read answers from logged-in service tabs. Automated API collaboration would require an authenticated backend with server-side keys and usage controls; GitHub Pages hosts only the current static frontend.
+
+Validated in Chromium: three lounge guests, moving meeting participants, cross-provider context, minimum two participants, browser persistence, Markdown download, responsive dialog and absence of page errors.
