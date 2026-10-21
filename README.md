@@ -55,3 +55,16 @@ The office’s original procedural people have been removed. Five transparent il
 The main office now renders actual seated 3D people inspired by option A of people-study.html, replacing the illustrated standing sprites. This is a real-time interpretation with simpler geometry and materials, not a pixel-identical reproduction of the generated design study. Heads, facial features, swept hair, sleeves, hands/fingers and footwear are modeled in geometry; premium staff have knit bump detail and a subtle watch, with plain basics for the other staff. Characters sit in ergonomic chairs with hands over keyboards and small head/finger motions; reduced motion and pause remain supported.
 
 Workstations are angled to expose seated side views, with open steel legs for clear lower-body silhouettes. The staff close-up uses 2.2× zoom; home restores the room. Static parts are merged by material within each animated group, keeping the five people near 100 meshes in total. The character atlas is no longer loaded. Department destinations, personal URLs, local tasks and left-monitor layout are retained.
+
+## One-person textured model review
+
+`model-review.html` evaluates a real skin-weighted Microsoft Rocketbox Male_Adult_02 model (MIT) at one office workstation. Main staff remain unchanged. This is a more realistic candidate, not a recreation of the generated A illustration. The page includes desk/face/hands/side cameras, orbit/zoom, pause/reduced motion and an earlier procedural-model comparison at the same desk.
+
+The 14 MiB GLB embeds five color/normal/alpha textures, 80 bones, three skinned primitives, two eyelid blendshapes, a keyed seated pose and a separate blink animation. Arm and leg targets are authored, not motion capture. It uses 2048px color maps and 1024px normal/alpha maps. Full attribution and the MIT license live in `public/assets/licenses/`. Asset-loading failures show an error, rather than silently substituting the earlier model.
+
+Rebuild with Blender 4.3+ and verified sources:
+
+```sh
+python3 scripts/fetch_office_avatar_sources.py /tmp/office-avatar-source
+blender -b -t 2 --python scripts/build_office_avatar.py -- --sources /tmp/office-avatar-source --output /tmp/office-seated.glb
+```
