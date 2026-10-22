@@ -22,7 +22,7 @@ export function furnishOffice(scene,woodTexture){
  for(const x of [-8.8,-8.25,-7.7])box('#65705b',x,.55,5.15,.014,.82,.018);
  part(cylinder,'#405246',-1.05,.08,5.35,.28,.06,.28);box('#405246',-1.05,1.13,5.35,.025,2.1,.025);
  const shade=new T.CylinderGeometry(.25,.43,.43,16);part(shade,'#e4dcc2',-1.05,2.1,5.35,1,1,1);shade.dispose();
- for(const [x,z,color]of [[-8.6,.2,'#cda280'],[-8.6,1.7,'#a2bdb0']]){oval(color,x,.25,z,.48,.24,.48);oval(color,x,.46,z+.20,.43,.29,.24);}
+ for(const [x,z,color]of [[-7.5,.2,'#cda280'],[-7.5,1.7,'#a2bdb0']]){oval(color,x,.25,z,.48,.24,.48);oval(color,x,.46,z+.20,.43,.29,.24);}
  // Rounded cushions, a notebook and coffee cups give the lounge some texture.
  for(const x of [-5.1,-3.8,-2.5])box('#c4b6d1',x,.83,4.68,1.22,.12,.86);
  oval('#ddd5b9',-5.4,1.02,5.10,.28,.25,.10);oval('#8ba99b',-2.25,1.02,5.10,.28,.25,.10);

@@ -2,7 +2,7 @@
 const mode=new URLSearchParams(location.search).get('view')==='light'?'light':'hybrid';
 document.body.dataset.renderMode=mode;
 const toggle=document.createElement('button');toggle.id='render-mode';toggle.textContent=mode==='light'?'3D 오피스':'2D 절전 화면';toggle.title=mode==='light'?'선택하면 3D 모델을 불러옵니다.':'3D를 종료하고 가벼운 화면으로 전환합니다.';toggle.onclick=()=>{const url=new URL(location.href);if(mode==='light')url.searchParams.delete('view');else url.searchParams.set('view','light');location.assign(url);};document.querySelector('.header-actions').prepend(toggle);
-if(mode==='hybrid'){try{await import('./office-hybrid.js?v=11');}catch(error){console.error('Lightweight 3D office unavailable:',error);document.querySelector('#loading').hidden=true;document.querySelector('#error').hidden=false;document.querySelector('#error h2').textContent='3D 오피스를 열 수 없어요.';document.querySelector('#error p').textContent='오른쪽 위의 2D 절전 화면으로 전환해 업무를 계속할 수 있어요.';}}
+if(mode==='hybrid'){try{await import('./office-hybrid.js?v=12');}catch(error){console.error('Lightweight 3D office unavailable:',error);document.querySelector('#loading').hidden=true;document.querySelector('#error').hidden=false;document.querySelector('#error h2').textContent='3D 오피스를 열 수 없어요.';document.querySelector('#error p').textContent='오른쪽 위의 2D 절전 화면으로 전환해 업무를 계속할 수 있어요.';}}
 else{
  const {employees}=await import('./employees.js?v=2');
  const {attachOfficeReports}=await import('./office-reports.js?v=3');

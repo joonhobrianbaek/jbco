@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {floorHeights,floorFootprints,zoneFloor,liftedReportRoute,liftPosition} from '../public/office-floors.js';
+import {stairs,floorHeights,floorFootprints,zoneFloor,liftedReportRoute,liftPosition} from '../public/office-floors.js';
 import {employees} from '../public/employees.js';
 import {buildReportRoute,executiveOffice} from '../public/report-routes.js';
 test('every employee reaches the third-floor CEO through two-flight staircases and can return home',()=>{
@@ -26,7 +26,7 @@ test('chief is on floor two; same-floor paths do not use a lift; invalid floors 
 test('upper floor footprints are nested and shrink; lift and CEO suite remain supported',()=>{
  for(let i=1;i<3;i++){
   const a=floorFootprints[i-1],b=floorFootprints[i];
-  assert(b.width<a.width);assert(b.depth<a.depth);
+  assert.equal(b.width,a.width);assert(b.depth<a.depth);
   assert(b.x-b.width/2>=a.x-a.width/2-1e-9);assert(b.x+b.width/2<=a.x+a.width/2+1e-9);
   assert(b.z-b.depth/2>=a.z-a.depth/2-1e-9);assert(b.z+b.depth/2<=a.z+a.depth/2+1e-9);
   for(const [x,z] of [liftPosition,executiveOffice.owner,executiveOffice.report]){assert(x>b.x-b.width/2&&x<b.x+b.width/2);assert(z>b.z-b.depth/2&&z<b.z+b.depth/2);}
@@ -38,4 +38,8 @@ test('descending from penthouse uses both flights per storey without vertical ju
  assert.equal(route[0][1],9.88);assert.equal(route.at(-1)[1],1.08);
  let drops=0;for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i];if(b[1]!==a[1]){drops++;assert(b[1]<a[1]);assert(Math.abs(b[2]-a[2])>.01);}}
  assert.equal(drops,48);
+});
+
+test('stairs stay on the far left and inside every floor despite depth setbacks',()=>{
+ for(const f of floorFootprints){assert(stairs.left>=f.x-f.width/2);assert(stairs.right<f.x-f.width/2+2);assert(stairs.back>f.z-f.depth/2);assert(stairs.front<f.z+f.depth/2);}
 });
