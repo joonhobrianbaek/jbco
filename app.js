@@ -1,4 +1,4 @@
-import {employees,teamEmployees,meetingRepresentative,employeeTaskCount} from './employees.js?v=1';
+import {employees,teamEmployees,meetingRepresentative,employeeTaskCount} from './employees.js?v=2';
 import {projectDestination} from './departments.js?v=office16';
 import {defaultServices,serviceUrl} from './services.js?v=office16';
 import {categories,defaultContext,handoffMarkdown} from './workspace.js?v=office16';
