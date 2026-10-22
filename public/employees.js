@@ -9,6 +9,9 @@ export const employees=[
  {id:'gemini-research',provider:'gemini',role:'자료 조사',model:'gemini',desk:[.9,-1.8]},
  {id:'muse-video',provider:'muse',role:'비서실장',model:'muse',desk:[12.2,.25],privateOffice:true},
  {id:'copilot-development',provider:'copilot',role:'개발 지원',model:'copilot',projectId:'automation-project',desk:[.9,1.65]},
+ {id:'gpt-research-support',provider:'gpt',role:'자료정리 지원',model:'gpt',projectId:'closing',standing:[2.9,-4.5],station:'커피 코너'},
+ {id:'gpt-planning-support',provider:'gpt',role:'기획 지원',model:'muse',standing:[-.75,3.1],station:'라운지 앞'},
+ {id:'claude-document-support',provider:'claude',role:'문서 지원',model:'claude',projectId:'proposal',standing:[3.15,2.9],station:'회의실 앞'},
 ];
 export const teamEmployees=id=>employees.filter(e=>e.provider===id);
 export const meetingRepresentative=id=>teamEmployees(id).find(e=>e.desk)||null;
