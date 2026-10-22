@@ -26,7 +26,7 @@ export function furnishOffice(scene,woodTexture){
  // Rounded cushions, a notebook and coffee cups give the lounge some texture.
  for(const x of [-5.1,-3.8,-2.5])box('#c4b6d1',x,.83,4.68,1.22,.12,.86);
  oval('#ddd5b9',-5.4,1.02,5.10,.28,.25,.10);oval('#8ba99b',-2.25,1.02,5.10,.28,.25,.10);
- box('#ece5d5',-3.8,.54,3.5,.36,.035,.43);cup(-4.35,.59,3.5);cup(-3.25,.59,3.45);
+ box('#ece5d5',-3.8,.54,3.05,.36,.035,.43);cup(-4.35,.59,3.05);cup(-3.25,.59,3.0);
  for(const [color,parts]of batches){const geometry=mergeGeometries(parts);parts.forEach(p=>p.dispose());const material=new T.MeshLambertMaterial(color==='wood'?{map:woodTexture}:{color});scene.add(new T.Mesh(geometry,material));}
  cube.dispose();ball.dispose();cylinder.dispose();
  // Shared soft contact texture gives depth while keeping GPU shadows disabled.
