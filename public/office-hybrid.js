@@ -1,4 +1,4 @@
-import {floorHeights,zoneFloor,liftedReportRoute} from './office-floors.js';
+import {floorHeights,floorFootprints,zoneFloor,liftedReportRoute} from './office-floors.js';
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {roamingStaff,ambientRoute} from './ambient-routes.js?v=1';
@@ -75,28 +75,29 @@ function floorBox(color,x,y,z,w,h,d,floor){const object=box(color,x,y+floorHeigh
 function floorLabel(text,x,y,z,width,floor){const object=label(text,x,y+floorHeights[floor],z,width);object.userData.floor=floor;return object;}
 // Limestone slabs, graphite frames and walnut fittings keep the office professional.
 for(const floor of [1,2]){
- floorBox('#b8b6ad',0,-.22,0,20.8,.34,12.6,floor);
- floorBox(floor===2?'#d9d1c1':'#e3e1d8',0,-.025,0,20.6,.08,12.4,floor);
- for(const x of [-10.2,10.2])floorBox('#384841',x,.48,0,.055,.95,12.2,floor);
- floorBox('#384841',0,.48,-6.1,20.4,.95,.055,floor);
- floorBox('#a18a64',0,-.13,6.27,20.8,.12,.04,floor);
+ const {x,z,width,depth}=floorFootprints[floor];
+ floorBox('#b8b6ad',x,-.22,z,width,.34,depth,floor);
+ floorBox(floor===2?'#d9d1c1':'#e3e1d8',x,-.025,z,width-.2,.08,depth-.2,floor);
+ for(const edge of [x-width/2+.15,x+width/2-.15])floorBox('#384841',edge,.48,z,.055,.95,depth-.3,floor);
+ floorBox('#384841',x,.48,z-depth/2+.15,width-.3,.95,.055,floor);
+ floorBox('#a18a64',x,-.13,z+depth/2-.03,width,.12,.04,floor);
 }
 // Collaboration floor: a boardroom, project tables and a quiet library.
 let prior=new Set(scene.children);
-for(const [x,z] of [[-7,-2.6],[-3,-2.6],[-7,1],[-3,1]])desk(x,z,2.8);
+for(const [x,z] of [[-5,-2.6],[-1.2,-2.6],[-5,1],[-1.2,1]])desk(x,z,2.8);
 for(const object of scene.children)if(!prior.has(object)){object.position.y+=floorHeights[1];object.userData.floor=1;}
-for(const x of [-8,-5,-2]){floorBox('#b29361',x,.9,-5.65,2.5,1.8,.4,1);for(let i=0;i<7;i++)floorBox(['#536b60','#d1c5b0','#7e8991'][i%3],x-1+i*.3,1.4,-5.4,.18,.48,.2,1);}
-floorBox('#53685d',-4,.10,4.5,9,.06,2.2,1);
-floorLabel('02 / COLLABORATION',-4,2.8,-4.8,4,1);
+for(const x of [-5,-1.8,1.4]){floorBox('#b29361',x,.9,-5.65,2.5,1.8,.4,1);for(let i=0;i<7;i++)floorBox(['#536b60','#d1c5b0','#7e8991'][i%3],x-1+i*.3,1.4,-5.4,.18,.48,.2,1);}
+floorBox('#53685d',-1.8,.10,4.5,8,.06,2.2,1);
+floorLabel('02 / COLLABORATION',-1.8,2.8,-4.8,4,1);
 // Penthouse: executive suite plus a private meeting lounge and planted terrace.
-floorBox('#a99575',-4,.4,1.5,4,.65,1.1,2);floorBox('#b4a58c',-4,.9,2,4,.65,.18,2);
-floorBox('#c6a576',-4,.45,-.4,2.4,.14,1.1,2);
-floorBox('#3f5148',-4,.08,1,7,.045,5.5,2);
-for(const x of [-8,-6,-4,-2,0]){
- floorBox('#a3977c',x,.32,5.4,1.5,.6,.65,2);
- const leaf=new T.Mesh(new T.SphereGeometry(.65,12,8),mat('#69836a'));leaf.position.set(x,1.1+floorHeights[2],5.4);leaf.scale.set(1,.8,.6);leaf.userData.floor=2;scene.add(leaf);
+floorBox('#a99575',0,.4,1.5,4,.65,1.1,2);floorBox('#b4a58c',0,.9,2,4,.65,.18,2);
+floorBox('#c6a576',0,.45,-.4,2.4,.14,1.1,2);
+floorBox('#3f5148',0,.08,1,4.5,.045,5.5,2);
+for(const x of [-1.5,.7,2.9,5.1,7.3]){
+ floorBox('#a3977c',x,.32,4.1,1.5,.6,.65,2);
+ const leaf=new T.Mesh(new T.SphereGeometry(.65,12,8),mat('#69836a'));leaf.position.set(x,1.1+floorHeights[2],4.1);leaf.scale.set(1,.8,.6);leaf.userData.floor=2;scene.add(leaf);
 }
-floorLabel('03 / EXECUTIVE PENTHOUSE',-3,2.8,-4.8,5.4,2);
+floorLabel('03 / EXECUTIVE PENTHOUSE',.2,2.8,-4.8,4.5,2);
 floorLabel('01 / OPERATIONS STUDIO',-4,2.9,-4.8,4.5,0);
 // One continuous lift and slender structural columns reveal the three levels.
 for(const floor of [0,1,2]){
@@ -105,7 +106,7 @@ for(const floor of [0,1,2]){
  floorLabel('LIFT',3.65,2.7,-2.95,1,floor);
 }
 const shaft=new T.Mesh(new T.BoxGeometry(1.1,11.4,1.2),glassMaterial);shaft.position.set(3.65,5.7,-2.95);architecture.add(shaft);
-for(const x of [-10.2,10.2])for(const z of [-6.1,6.1]){const col=box('#45564e',x,4.4,z,.12,8.8,.12,architecture);}
+for(const floor of [0,1]){const f=floorFootprints[floor];for(const x of [f.x-f.width/2+.2,f.x+f.width/2-.2])for(const z of [f.z-f.depth/2+.2,f.z+f.depth/2-.2])box('#45564e',x,floorHeights[floor]+2.2,z,.12,4.4,.12,architecture);}
 const floorNav=document.createElement('nav');floorNav.className='office-floor-nav';floorNav.setAttribute('aria-label','오피스 층 선택');
 for(const [key,text] of [['all','전체'],[0,'1F 업무'],[1,'2F 협업'],[2,'3F 대표실']]){const button=document.createElement('button');button.textContent=text;button.dataset.floor=key;button.setAttribute('aria-pressed',String(key==='all'));button.onclick=()=>selectFloor(key);floorNav.append(button);}root.append(floorNav);
 function selectFloor(floor){selectedFloor=floor;for(const object of scene.children){if(object.userData.floor!==undefined)object.visible=floor==='all'||object.userData.floor===floor;}architecture.visible=floor==='all';for(const button of floorNav.children)button.setAttribute('aria-pressed',String(button.dataset.floor===String(floor)));overview();}

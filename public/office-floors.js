@@ -13,3 +13,10 @@ export function liftedReportRoute(points,{homeFloor=0,destinationFloor=2}={}) {
  const after=points.slice(split).map(([x,z])=>[x,1.08+floorHeights[destinationFloor],z]);
  return [...before,[liftPosition[0],1.08+floorHeights[homeFloor],liftPosition[1]],[liftPosition[0],1.08+floorHeights[destinationFloor],liftPosition[1]],...after].filter((p,i,a)=>!i||p.some((v,j)=>v!==a[i-1][j]));
 }
+
+/** Upper levels step inward while the executive suite and lift stay aligned. */
+export const floorFootprints = [
+ {x:0,z:0,width:20.8,depth:12.6},
+ {x:1.8,z:-.1,width:17,depth:12.4},
+ {x:3.9,z:-.7,width:12.8,depth:11}
+];
