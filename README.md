@@ -1,5 +1,11 @@
 # BB Office
 
+## Three-storey office
+
+The default 3D office now has three physical storeys: an operations studio on 1F, collaboration tables and secretary/meeting space on 2F, and an executive penthouse with a private lounge and planted terrace on 3F. Use the floor selector to isolate each level or view the whole building. CEO reports use the shared vertical lift route, while stable employee IDs, jobs and approval gates remain unchanged. Original village-inspired characters use rounder heads, larger eyes and restrained business outfits; the architecture uses limestone, walnut and graphite. The 2D energy-saving view retains its previous layout.
+
+Validation: syntax checks and 55 tests pass, including every employee’s lift route, return endpoints, same-floor routing and invalid-floor rejection. Browser visual QA was attempted but blocked by disabled WebGL in the preview browser; the final 3D appearance and picking still need verification in a WebGL 2 browser. No production data or schedules were activated.
+
 A full-screen, interactive 3D office for five AI workspaces: GPT, Claude, Gemini, Muse and Copilot. GPT and Claude are the main workspaces, with larger front-center desks and highlighted roster entries; Gemini, Muse and Copilot provide supporting workspaces. Frosted rear glazing keeps the cutaway free of floating exterior scenery. The office includes individual desks, seated adult 3D staff, a glass meeting room, pantry and lounge. Drag to orbit, scroll to zoom, or reset the view. Animation can be paused and starts paused with reduced-motion preferences.
 
 Requires Node.js 20 or later. No application dependency installation.

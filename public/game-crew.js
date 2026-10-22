@@ -31,17 +31,17 @@ export function createGameCrew({variant=1,owner=false,lounge=false}={}){
  const [skin,hair,shirt,trousers]=palettes[variant%palettes.length];
  const actor=new T.Group(),model=new T.Group();model.position.y=-1.08;actor.add(model);
  const body=baker();
- body.add(sphere,shirt,0,.99,0,.29,.36,.21);
+ body.add(sphere,shirt,0,.99,0,.31,.34,.235);
  body.add(sphere,trousers,0,.68,0,.25,.13,.19);
  // Collar, jacket trim and a tiny badge distinguish premium outfits without logos.
  body.add(sphere,'#f5eee0',0,1.26,.08,.14,.07,.12);
  if(owner){body.add(cube,'#1c3349',-.12,1.07,.18,.07,.37,.045,-.25);body.add(cube,'#1c3349',.12,1.07,.18,.07,.37,.045,.25);body.add(cube,'#9b6861',0,1.14,.22,.045,.18,.02);}
  else if(variant<7){body.add(cube,'#d7bd7a',-.16,1.08,.19,.045,.04,.018);body.add(cube,'#e8e2d0',0,.97,.213,.015,.43,.015);}
  model.add(body.mesh());
- const head=new T.Group();head.position.y=1.57;model.add(head);
+ const head=new T.Group();head.position.y=1.62;head.scale.set(1.14,1.07,1.10);model.add(head);
  const face=baker();face.add(sphere,skin,0,0,0,.39,.39,.34);
- for(const s of [-1,1]){face.add(sphere,skin,s*.38,-.035,0,.075,.10,.065);face.add(sphere,'#df9b88',s*.225,-.095,.285,.058,.028,.013);}
- face.add(sphere,skin,0,-.055,.337,.035,.037,.035);
+ for(const s of [-1,1]){face.add(sphere,skin,s*.38,-.035,0,.075,.10,.065);face.add(sphere,'#e7a591',s*.225,-.095,.285,.073,.042,.014);}
+ face.add(sphere,skin,0,-.055,.337,.048,.035,.047);
  // Open cap leaves a broad forehead and an expressive face.
  const cap=new T.SphereGeometry(1,16,10,0,Math.PI*2,0,1.65);
  face.add(cap,hair,0,.09,-.025,.405,.34,.35);cap.dispose();
@@ -53,7 +53,7 @@ export function createGameCrew({variant=1,owner=false,lounge=false}={}){
  for(const s of [-1,1])face.add(sphere,hair,s*.125,.065,.321,.06,.014,.013,s*.1);
  const smile=new T.TorusGeometry(.05,.009,5,12,Math.PI);face.add(smile,'#8b4e45',0,-.13,.32,1,1,1,Math.PI);smile.dispose();
  head.add(face.mesh());
- const eyeParts=baker();for(const s of [-1,1]){eyeParts.add(sphere,'#302b2b',s*.125,-.01,.324,.032,.047,.017);eyeParts.add(sphere,'#fff7ed',s*.125-.008,.008,.339,.009,.012,.005);}
+ const eyeParts=baker();for(const s of [-1,1]){eyeParts.add(sphere,'#302b2b',s*.125,-.01,.324,.042,.060,.022);eyeParts.add(sphere,'#fff7ed',s*.125-.008,.008,.339,.009,.012,.005);}
  const eyes=eyeParts.mesh();head.add(eyes);
  if(variant===5){const glasses=baker();const ring=new T.TorusGeometry(.078,.009,5,16);for(const s of [-1,1])glasses.add(ring,'#3b352e',s*.125,-.008,.35,1,1,1);glasses.add(cube,'#3b352e',0,0,.35,.09,.012,.012);ring.dispose();head.add(glasses.mesh());}
  const seatedLegs=baker();for(const s of [-1,1]){seatedLegs.add(sphere,trousers,s*.145,.58,.15,.10,.10,.23);seatedLegs.add(sphere,trousers,s*.145,.35,.32,.085,.24,.085);seatedLegs.add(sphere,'#eee9dc',s*.145,.14,.37,.11,.07,.18);seatedLegs.add(cube,'#bbbcae',s*.145,.10,.39,.21,.035,.29);}
