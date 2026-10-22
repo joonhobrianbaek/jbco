@@ -1,0 +1,32 @@
+# A paid, single-instance service with persistent private history.
+# Review Render's current service + disk prices before creating the Blueprint.
+services:
+  - type: web
+    name: bb-office-runtime
+    runtime: node
+    plan: starter
+    numInstances: 1
+    buildCommand: npm run check
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: OFFICE_RUNTIME_TOKEN
+        generateValue: true
+      - key: OFFICE_ALLOWED_ORIGINS
+        value: https://joonhobrianbaek.github.io
+      - key: OFFICE_DATA_DIR
+        value: /var/data/office
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        sync: false
+      - key: ANTHROPIC_MODEL
+        sync: false
+    disk:
+      name: office-history
+      mountPath: /var/data
+      sizeGB: 1

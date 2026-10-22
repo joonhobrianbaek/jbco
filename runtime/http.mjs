@@ -9,6 +9,12 @@ if(directory===publicRoot||directory.startsWith(publicRoot+sep))throw new Error(
 const runtime=createRuntime({directory});
 const allowed=new Set((process.env.OFFICE_ALLOWED_ORIGINS||'').split(',').filter(Boolean));
 export async function api(req,res){
+ // Hosting readiness checks must not require the owner's bearer token.
+ if(new URL(req.url,'http://runtime').pathname==='/healthz'&&['GET','HEAD'].includes(req.method)){
+  try{await runtime.ready;res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:JSON.stringify({ok:true}));}
+  catch{res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:JSON.stringify({ok:false}));}
+  return true;
+ }
  if(!req.url.startsWith('/api/'))return false;
  const origin=req.headers.origin;
  const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Vary':'Origin'};
