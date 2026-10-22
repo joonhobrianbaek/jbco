@@ -1,0 +1,6 @@
+.git
+.env
+.env.*
+.office-data
+node_modules
+test
