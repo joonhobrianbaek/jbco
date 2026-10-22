@@ -1,0 +1,11 @@
+{
+  "source": "User-supplied Meshy_AI_Flame_Chubby_Buddy_1022164657_texture.glb",
+  "source_bytes": 11077712,
+  "source_triangles": 219334,
+  "source_skins": 0,
+  "source_animations": 0,
+  "processing": "Remove baked floor cushion and floor-resting lower body; retain face/hair/flame-shirt UVs, simplify upper body, add rigid-part chair-seated trousers and shoes, bound textures to 1024px.",
+  "builder": "scripts/build_chubby_office.py",
+  "output_triangles": 29176,
+  "runtime": "One pilot employee, gpt-analysis. Sitting/standing and procedural leg transforms only; no skeletal skin or motion-capture clips. Original full-resolution source is not served publicly."
+}
