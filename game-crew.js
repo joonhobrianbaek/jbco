@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {armDimensions,crewArmPose} from './crew-arm-pose.js?v=1';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
 
 // Small shared primitives and baked vertex colours keep the whole crew inexpensive.
@@ -58,8 +59,15 @@ export function createGameCrew({variant=1,owner=false,lounge=false}={}){
  const seatedLegs=baker();for(const s of [-1,1]){seatedLegs.add(sphere,trousers,s*.145,.58,.15,.10,.10,.23);seatedLegs.add(sphere,trousers,s*.145,.35,.32,.085,.24,.085);seatedLegs.add(sphere,'#eee9dc',s*.145,.14,.37,.11,.07,.18);seatedLegs.add(cube,'#bbbcae',s*.145,.10,.39,.21,.035,.29);}
  const seated=seatedLegs.mesh();model.add(seated);
  const legs=[];for(const s of [-1,1]){const parts=baker();parts.add(sphere,trousers,0,-.23,0,.09,.25,.09);parts.add(sphere,'#eee9dc',0,-.46,.055,.11,.07,.17);const leg=new T.Group();leg.position.set(s*.14,.64,0);leg.add(parts.mesh());model.add(leg);legs.push(leg);}
- const hands=[];
- for(const s of [-1,1]){const parts=baker();parts.add(sphere,shirt,s*.08,.025,-.12,.105,.105,.25,s*-.1);parts.add(sphere,skin,0,0,.07,.085,.06,.10);const hand=new T.Group();hand.position.set(s*.23,1.015,.40);hand.add(parts.mesh());model.add(hand);hands.push(hand);}
+ // Connected shoulder and elbow pivots keep sleeves attached in every pose.
+ // The old horizontal typing sleeve was merely shifted down when standing.
+ const arms=[];
+ for(const side of [-1,1]){
+  const sleeve=baker();sleeve.add(sphere,shirt,0,-armDimensions.upper/2,0,.078,.145,.078);
+  const shoulder=new T.Group();shoulder.position.set(side*.255,armDimensions.shoulderY,0);shoulder.add(sleeve.mesh());
+  const lower=baker();lower.add(sphere,shirt,0,-.09,0,.068,.115,.068);lower.add(sphere,skin,0,-armDimensions.forearm,0,.062,.065,.065);
+  const elbow=new T.Group();elbow.position.y=-armDimensions.upper;elbow.add(lower.mesh());shoulder.add(elbow);model.add(shoulder);arms.push({shoulder,elbow});
+ }
  if(lounge){const pages=baker();pages.add(cube,'#f6f0dc',-.10,1.035,.49,.19,.025,.25,-.12);pages.add(cube,'#e6d9bd',.10,1.035,.49,.19,.025,.25,.12);model.add(pages.mesh());}
  let walking=false,standing=false;actor.userData.pose='seated';
  actor.userData.setWalking=value=>{walking=value;standing=value;actor.userData.pose=value?'walking':lounge?'reading':'typing';seated.visible=!value;legs.forEach(l=>l.visible=value);model.position.y=-1.08;};
@@ -68,7 +76,7 @@ export function createGameCrew({variant=1,owner=false,lounge=false}={}){
   const t=time*.001+variant*.71,active=enabled?1:0;
   head.rotation.z=active*Math.sin(t*1.6)*.025;
   eyes.scale.y=enabled&&Math.sin(t*1.7)>.985?.12:1;
-  hands.forEach((hand,i)=>{hand.position.y=1.015+(standing?-.24:active*Math.sin(t*15+i*Math.PI)*.018);hand.position.z=standing?.04:.40;});
+  arms.forEach(({shoulder,elbow},index)=>{const pose=crewArmPose({standing,walking,phase:t,index,active:enabled});shoulder.rotation.set(pose.shoulderX,0,pose.shoulderZ);elbow.rotation.x=pose.elbowX;});
   legs.forEach((leg,i)=>leg.rotation.x=walking&&enabled?Math.sin(t*9+i*Math.PI)*.36:0);
  };
  actor.userData.setWalking(false);actor.userData.animate(0,false);

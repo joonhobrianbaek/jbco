@@ -3,7 +3,7 @@ import {OrbitControls} from './vendor/OrbitControls.js';
 import {roamingStaff,ambientRoute} from './ambient-routes.js?v=1';
 import {furnishOffice} from './office-furnishings.js?v=1';
 import {executiveOffice,buildReportRoute} from './report-routes.js?v=1';
-import {createGameCrew} from './game-crew.js?v=1';
+import {createGameCrew} from './game-crew.js?v=2';
 import {employees} from './employees.js?v=2';
 import {attachOfficeReports} from './office-reports.js?v=2';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
