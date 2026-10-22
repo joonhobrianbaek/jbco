@@ -1,11 +1,11 @@
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {roamingStaff,ambientRoute} from './ambient-routes.js?v=1';
-import {furnishOffice} from './office-furnishings.js?v=1';
-import {executiveOffice,buildReportRoute} from './report-routes.js?v=1';
+import {furnishOffice} from './office-furnishings.js?v=2';
+import {executiveOffice,buildReportRoute} from './report-routes.js?v=2';
 import {createGameCrew} from './game-crew.js?v=2';
 import {employees} from './employees.js?v=2';
-import {attachOfficeReports} from './office-reports.js?v=2';
+import {attachOfficeReports} from './office-reports.js?v=3';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const root=document.querySelector('#office');root.setAttribute('aria-label','절전형 3D 오피스 · 작은 3D 직원과 보고 대기목록');
 const renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power',alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1));renderer.shadowMap.enabled=false;renderer.setClearColor('#17201f');renderer.outputColorSpace=T.SRGBColorSpace;root.append(renderer.domElement);
@@ -38,7 +38,7 @@ const artLoader=new T.TextureLoader();for(const [i,file]of ['mona-lisa.jpg','bas
 // A light glass meeting partition, meeting table and lounge.
 const glassMaterial=new T.MeshBasicMaterial({color:'#91b2a0',transparent:true,opacity:.1,depthWrite:false,side:T.DoubleSide});const glass=new T.Mesh(new T.PlaneGeometry(5.3,2.8),glassMaterial);glass.position.set(7,1.4,1.8);scene.add(glass);for(const x of [4.35,9.65])box('#395341',x,1.4,1.8,.045,2.8,.045);box('#395341',7,2.8,1.8,5.35,.045,.045);
 const table=clickable(box('#c5a779',7,.87,4,3.7,.14,1.5),'meeting');for(const x of [5.8,8.2]){box('#52624d',x,.45,4,.08,.8,.7);chair(x,2.9);chair(x,5.1);}
-softBox('#aa99bb',-3.8,.47,4.8,4.3,.65,1.18);box('#b5a7c4',-3.8,.91,5.28,4.3,.65,.18);for(const x of [-6,-1.6])box('#a394b5',x,.7,4.8,.26,.8,1.2);softBox('#c1a77c',-3.8,.45,3.5,1.8,.12,.95,.4);for(const x of [-4.4,-3.2])box('#675c45',x,.25,3.5,.06,.4,.55);
+softBox('#aa99bb',-3.8,.47,4.8,4.3,.65,1.18);box('#b5a7c4',-3.8,.91,5.28,4.3,.65,.18);for(const x of [-6,-1.6])box('#a394b5',x,.7,4.8,.26,.8,1.2);softBox('#c1a77c',-3.8,.45,3.05,1.8,.12,.95,.4);for(const x of [-4.4,-3.2])box('#675c45',x,.25,3.05,.06,.4,.55);
 // An open executive suite: a visible doorway, low storage and transparent glazing.
 // No opaque full-height walls, so the office remains usable from every angle.
 const room=executiveOffice.bounds;
@@ -73,10 +73,10 @@ clickable(label('MUSE',7,2.65,0,1.3),'team:muse');
 const ui=document.createElement('div');ui.className='hybrid-office-ui';root.append(ui);const bubble=document.createElement('button');bubble.className='hybrid-report-bubble';bubble.hidden=true;ui.append(bubble);
 let reportActor=null,home=null,reportDestination=null,reportOpen=null,reportPath=null,reportOwner=false;
 function sprite(){return document.createElement('span');}
-function settleReport(actor,arrived){actor.rotation.y=0;if(arrived){actor.userData.setStanding();const target=reportOwner?executiveOffice.owner:executiveOffice.chief;actor.rotation.y=Math.atan2(target[0]-actor.position.x,target[1]-actor.position.z);}else actor.userData.setWalking(false);}
+function settleReport(actor,arrived){actor.rotation.y=0;if(arrived){actor.userData.setStanding();const target=reportOwner?executiveOffice.owner:executiveOffice.chief;actor.rotation.y=Math.atan2(target[0]-actor.position.x,target[1]-actor.position.z);}else{const employee=employees.find(e=>e.id===actor.userData.action);if(employee?.standing){actor.userData.setStanding();actor.rotation.y=actor.userData.homeRotation||0;}else actor.userData.setWalking(false);}}
 function startTrip(points,done){if(!reportActor){done?.();return;}if(points.length<2){reportActor.position.copy(points[0]);settleReport(reportActor,false);moving=null;done?.();invalidate();return;}reportActor.userData.setWalking(true);const to=points.at(-1),distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:reportActor,from:points[0],to:to.clone(),points,duration:Math.max(1400,Math.min(6500,distance*280)),elapsed:0,last:0,done,kind:'report'};
  if(reduced.matches){reportActor.position.copy(to);settleReport(reportActor,to.distanceTo(reportDestination)<.001);moving=null;done?.();}invalidate();}
-const movement={visit(report,open){stopAmbient();scheduleAmbient();reportActor=actors.get(report.employeeId);if(!reportActor)return;home=reportActor.position.clone();reportOwner=report.owner;const employee=employees.find(e=>e.id===report.employeeId);reportPath=buildReportRoute([home.x,home.z],{owner:report.owner,lounge:!!employee?.lounge}).map(([x,z])=>V(x,1.08,z));reportDestination=reportPath.at(-1);reportOpen=open;bubble.textContent=report.owner?'대표님, 보고드릴 내용이 있어요.':'비서실장에게 전달할 내용이 있어요.';bubble.onclick=open;startTrip(reportPath,()=>{bubble.hidden=false;invalidate();});},
+const movement={visit(report,open){stopAmbient();scheduleAmbient();reportActor=actors.get(report.employeeId);if(!reportActor)return;home=reportActor.position.clone();reportOwner=report.owner;const employee=employees.find(e=>e.id===report.employeeId);reportPath=buildReportRoute([home.x,home.z],{owner:report.owner,lounge:!!employee?.lounge,standing:!!employee?.standing}).map(([x,z])=>V(x,1.08,z));reportDestination=reportPath.at(-1);reportOpen=open;bubble.textContent=report.owner?'대표님, 보고드릴 내용이 있어요.':'비서실장에게 전달할 내용이 있어요.';bubble.onclick=open;startTrip(reportPath,()=>{bubble.hidden=false;invalidate();});},
  returnHome(){bubble.hidden=true;const path=moving?.kind==='report'?[reportActor.position.clone(),...reportPath.slice(0,(moving.segment??0)+1).reverse()]:[...reportPath].reverse();const unique=path.filter((p,i)=>!i||p.distanceTo(path[i-1])>.001);return new Promise(resolve=>startTrip(unique,()=>{reportActor=null;reportPath=null;scheduleAmbient();resolve();}));},
  clear(){moving=null;bubble.hidden=true;if(reportActor&&home){reportActor.position.copy(home);settleReport(reportActor,false);}reportActor=null;reportPath=null;scheduleAmbient();invalidate();},isMoving:()=>moving?.kind==='report'};
 reports=attachOfficeReports({floor:ui,sprite,movement});
