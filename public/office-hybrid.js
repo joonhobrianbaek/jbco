@@ -31,7 +31,7 @@ for(const [x,z]of [[-9.4,-5.4],[-9.4,5.4],[3.8,-5.4],[9.5,5.4]])plant(x,z);
 function chair(x,z,color='#354c3c'){box(color,x,.56,z,.63,.12,.58);box(color,x,.95,z-.22,.63,.74,.09);box('#4e6052',x,.3,z,.07,.5,.07);box('#4e6052',x,.1,z,.72,.06,.56);}
 function desk(x,z,w=2.6){softBox('#c6a576',x,.88,z,w,.12,1.12);for(const dx of [-w/2+.16,w/2-.16])box('#3c5143',x+dx,.46,z,.075,.82,.88);box('#253d32',x+.35,1.2,z+.04,.83,.51,.07);box('#546c58',x+.35,.99,z+.04,.06,.23,.07);box('#789883',x+.35,1.2,z+.085,.74,.42,.012);box('#efeee1',x-.7,.99,z+.2,.28,.04,.34);box('#927d55',x-.98,1.0,z-.08,.20,.035,.20);box('#927d55',x-.98,1.20,z-.08,.025,.39,.025);box('#dfd3ad',x-.98,1.40,z-.08,.30,.14,.24);box('#445b50',x-.15,.99,z-.27,.60,.035,.22);for(let row=0;row<3;row++)box('#b8c6b4',x-.15,1.01,z-.34+row*.065,.49,.008,.018);chair(x-.15,z-.75);}
 for(const e of employees.filter(e=>e.desk&&e.provider!=='muse'))desk(e.desk[0],e.desk[1]);
-desk(...executiveOffice.desk,3.1);desk(7,-.05,2.5);
+desk(...executiveOffice.desk,4.15);desk(7,-.05,2.5);
 // Pantry and freestanding art; no opaque outer wall blocks orbiting.
 box('#b29361',-2.1,.55,-5.55,8.9,1.05,.7);box('#ebe9da',-2.1,1.1,-5.55,9.1,.12,.87);box('#263b30',-4.8,1.35,-5.55,.6,.45,.5);
 for(const x of [-4,-2,0,2])box('#bfcaaf',x,1.28,-5.6,.16,.25,.16);
@@ -44,7 +44,7 @@ softBox('#9eaa9f',-3.8,.47,4.8,4.3,.65,1.18);box('#aeb5a9',-3.8,.91,5.28,4.3,.65
 // No opaque full-height walls, so the office remains usable from every angle.
 const room=executiveOffice.bounds;
 box('#637b68',7.2,.075,-3.75,5.45,.035,4.55);
-box('#a5b59a',7.2,.098,-3.75,5.1,.012,4.22);
+box('#38473f',7.2,.098,-3.75,5.1,.012,4.22);
 for(const [z,length]of [[-4.9,2.4],[-1.95,1.1]]){
  const pane=new T.Mesh(new T.PlaneGeometry(length,2.5),glassMaterial);pane.rotation.y=Math.PI/2;pane.position.set(room.left,1.3,z);scene.add(pane);
  box('#526452',room.left,2.55,z,.045,.045,length);
@@ -112,10 +112,51 @@ floorLabel('02 / COLLABORATION',-1.8,2.8,-4.8,4,1);
 floorBox('#a99575',0,.4,.2,4,.65,1.1,2);floorBox('#b4a58c',0,.9,.7,4,.65,.18,2);
 floorBox('#c6a576',0,.45,-1.5,2.4,.14,1.1,2);
 floorBox('#3f5148',0,.08,-.5,4.5,.045,4.5,2);
-for(const x of [-6,-4,-2,0,2]){
+for(const x of [1.7]){
  floorBox('#a3977c',x,.32,-5.6,1.5,.6,.65,2);
  const leaf=new T.Mesh(new T.SphereGeometry(.65,12,8),mat('#69836a'));leaf.position.set(x,1.1+floorHeights[2],-5.6);leaf.scale.set(1,.8,.6);leaf.userData.floor=2;scene.add(leaf);
 }
+// Private hospitality lounge on the penthouse: a staffed bar and espresso counter.
+floorBox('#49392f',-4.8,.55,-2.6,5.8,1.05,.86,2);
+floorBox('#d7d1c4',-4.8,1.12,-2.6,6,.12,1.05,2);
+floorBox('#b79b61',-4.8,.18,-2.05,5.7,.055,.04,2);
+for(let i=0;i<18;i++)floorBox('#72543a',-7.5+i*.32,.6,-2.14,.045,.82,.035,2);
+for(const y of [1,1.7,2.35])floorBox('#594333',-4.8,y,-5.4,6,.08,.42,2);
+for(let i=0;i<12;i++){
+ const x=-7.3+i*.45;
+ floorBox(['#355c48','#9c663c','#3f4e5f','#bca374'][i%4],x,1.27,-5.35,.16,.43,.16,2);
+ floorBox('#c8b685',x,1.52,-5.35,.07,.13,.07,2);
+}
+// Dedicated espresso station, grinder, cups and serving tray.
+floorBox('#293d38',-2.9,1.4,-2.65,1.3,.55,.55,2);
+floorBox('#b9b9af',-2.9,1.48,-2.34,1.13,.18,.04,2);
+floorBox('#c4b69c',-2.9,1.16,-2.18,1.3,.04,.32,2);
+floorBox('#39453f',-1.95,1.34,-2.7,.28,.4,.3,2);
+floorBox('#d1b389',-1.95,1.64,-2.7,.24,.22,.24,2);
+for(const x of [-3.4,-3.05,-2.7]){floorBox('#f1e9d8',x,1.76,-2.65,.15,.13,.15,2);floorBox('#6b4631',x,1.83,-2.65,.11,.01,.11,2);}
+for(const x of [-6.5,-5.2,-3.9]){
+ floorBox('#283e36',x,.72,-1.35,.55,.14,.52,2);
+ floorBox('#aa8b54',x,.36,-1.35,.055,.65,.055,2);
+ floorBox('#3c4940',x,.065,-1.35,.5,.07,.5,2);
+ floorBox('#2f453b',x,1,-1.56,.55,.5,.08,2);
+}
+for(const x of [-6.4,-4.8,-3.2]){
+ floorBox('#4b4d41',x,2.8,-2.55,.025,.8,.025,2);
+ floorBox('#c2a267',x,2.38,-2.55,.55,.17,.5,2);
+ floorBox('#ffe2a0',x,2.28,-2.55,.42,.035,.36,2);
+}
+floorLabel('PRIVATE BAR  /  COFFEE',-4.8,2.95,-5.35,4.5,2);
+// Executive suite: walnut feature wall, brass reveals, large leather desk and credenza.
+floorBox('#3b332b',7.2,1.55,-6.03,5.7,2.85,.12,2);
+for(let i=0;i<16;i++)floorBox('#73583c',4.6+i*.35,1.55,-5.94,.055,2.65,.035,2);
+floorBox('#c1a16a',7.2,2.94,-5.92,5.55,.04,.04,2);
+floorBox('#f1d69d',7.2,.25,-5.92,5.55,.035,.04,2);
+floorBox('#49372c',7,.88,-4.3,4.2,.18,1.28,2);
+floorBox('#b29256',7,.79,-3.66,4.15,.045,.025,2);
+floorBox('#263b34',6.6,.99,-4.1,1.7,.035,.6,2);
+floorBox('#293b33',6.85,1.1,-5.31,.82,.92,.13,2);
+floorBox('#b79b61',6.85,1.56,-5.31,.84,.04,.15,2);
+floorLabel('BB  /  CHAIRMAN',7.15,2.22,-5.86,2.5,2);
 floorLabel('03 / EXECUTIVE PENTHOUSE',.2,2.8,-4.8,4.5,2);
 floorLabel('01 / OPERATIONS STUDIO',-4,2.9,-4.8,4.5,0);
 // Slender columns preserve the stepped silhouette.
@@ -128,6 +169,13 @@ function selectFloor(floor){selectedFloor=floor;for(const object of scene.childr
 function crew(provider,id,x,z,variant=0,lounge=false){const actor=createGameCrew({variant,owner:provider==='owner',lounge});actor.userData.floor=provider==='owner'?2:zoneFloor(x,z);actor.position.set(x,1.08+floorHeights[actor.userData.floor],z);scene.add(actor);clickable(actor,id);actors.set(id,actor);return actor;}
 for(const [i,e]of employees.entries()){const pos=e.standing|| (e.provider==='muse'?[6.85,-.8]:e.lounge?[e.provider==='gpt'?-4.8:-2.8,4.75]:[e.desk[0]-.15,e.desk[1]-.75]);const actor=crew(e.provider,e.id,...pos,i+1,!!e.lounge);if(e.standing){actor.userData.setStanding();actor.rotation.y=e.provider==='claude'?1.3:-1.2;actor.userData.homeRotation=actor.rotation.y;}}
 crew('owner','dashboard',...executiveOffice.owner,0);
+// Hospitality characters are scene staff, separate from task-executing employees.
+for(const [id,x,variant] of [['hospitality-bartender',-6,2],['hospitality-barista',-3,5]]){
+ const actor=createGameCrew({variant});actor.position.set(x,1.08+floorHeights[2],-3.7);actor.userData.floor=2;actor.userData.setStanding();
+ scene.add(actor);actors.set(id,actor);
+ const apron=floorBox('#263b32',x,1.02,-3.48,.4,.5,.025,2);
+}
+
 for(const [id,name,x,z]of [['gpt','GPT',-6,0],['claude','CLAUDE',-2.4,0],['gemini','GEMINI',.9,-2.8],['copilot','COPILOT',.9,1.65]])clickable(label(name,x,2.65,z,1.6),'team:'+id);
 clickable(floorLabel('MUSE',7,2.65,0,1.3,1),'team:muse');
 const ui=document.createElement('div');ui.className='hybrid-office-ui';root.append(ui);const bubble=document.createElement('button');bubble.className='hybrid-report-bubble';bubble.hidden=true;ui.append(bubble);
