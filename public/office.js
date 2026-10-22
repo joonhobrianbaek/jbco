@@ -102,7 +102,7 @@ let detailModule,detailAsset,teamAssets;{try{detailModule=await import('./detail
 const officeEmployees=modelReview?[employees[0]]:employees;
 for(const [index,employee] of officeEmployees.entries()){
  const home=new T.Group();scene.add(home);const provider=agents.find(a=>a.id===employee.provider);
- const worker=detailModule.createDetailedStaff(home,modelReview?detailAsset:teamAssets[employee.model],provider,index);worker.employee=employee;
+ const worker=detailModule.createDetailedStaff(home,modelReview?detailAsset:teamAssets[employee.avatar],provider,index);worker.employee=employee;
  if(modelReview){worker.previous=createSeatedStaff(home,provider,index);worker.previous.person.visible=false;}workers.push(worker);
 }
 function staff(parent,index){const worker=workers[index];parent.add(worker.person);return worker.person;}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {employees,teamEmployees,meetingRepresentative,employeeTaskCount} from '../public/employees.js';
 test('paid main departments have distinct roles and free teams remain one actual employee',()=>{
  assert.equal(new Set(employees.map(e=>e.id)).size,12);
- for(const id of ['gpt','claude']){const team=teamEmployees(id);assert.equal(team.length,id==='gpt'?5:4);assert.equal(new Set(team.map(e=>e.role)).size,team.length);assert(new Set(team.map(e=>e.model)).size>=3);}
+ for(const id of ['gpt','claude']){const team=teamEmployees(id);assert.equal(team.length,id==='gpt'?5:4);assert.equal(new Set(team.map(e=>e.role)).size,team.length);assert(new Set(team.map(e=>e.avatar)).size>=3);}
  for(const id of ['gemini','copilot','muse'])assert.equal(teamEmployees(id).length,1);
  assert.equal(teamEmployees('muse')[0].role,'비서실장');assert.equal(teamEmployees('muse')[0].privateOffice,true);
  assert.equal(employees.filter(e=>e.lounge).length,2);assert.equal(employees.filter(e=>e.standing).length,3);assert(employees.filter(e=>e.standing).every(e=>['gpt','claude'].includes(e.provider)));

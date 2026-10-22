@@ -165,3 +165,35 @@ The default view is now `hybrid`: a real, rotatable Three.js office built from s
 ### Visible office routines
 
 The rejected chubby GLB is no longer loaded by the office. Illustrated staff occasionally leave their spot for a brief lounge/coffee or stretching route, one at a time. The first route starts after about six visible seconds; a round trip has two 3.2-second movement legs and a short stop, followed by a 20-second gap. Routine animation is capped at 12fps; report movement and camera interaction retain the existing maximum 24fps. Report handoffs interrupt and take priority over decorative routines. The pause button, reduced-motion preference, hidden tabs and open dialogs suppress new routines. Rest periods render no frames. These routines never create tasks, fabricate AI replies, change work status or trigger company work.
+
+
+## Local job folder viewer
+
+Choose **작업 폴더 → jobs 폴더 연결** in Chrome/Edge on HTTPS or localhost. Select a private folder outside this repository containing `<job-id>/job.json`. The office reads it every 30 seconds while visible and refreshes when the tab returns. Unsupported browsers show an explanation; the existing manual workflow remains available. Handles and job contents are not stored in localStorage or uploaded. Reconnect after reloading.
+
+Minimum synthetic example (save outside the checkout):
+
+```json
+{"id":"demo-1","title":"가상 업무","status":"awaiting_approval","plan":[],"events":[{"at":"2026-10-22T12:00:00Z","seat":"claude-writing","type":"finished","note":"가상 산출물 검증 완료"}],"decision":{"action":null,"note":"","at":null}}
+```
+
+Actual events create employee badges. Approval requests and questions also enter the existing report queue. Reading a report does not approve it. Open the job panel to record approval or revision; write permission is requested only then. Only `decision` changes, leaving status transitions to the executor. A changed snapshot is rejected before writing; the File System Access API provides no cross-process compare-and-swap, so avoid editing the same file concurrently during a decision write. Review the original files before deciding; the report queue displays the job record, not document contents.
+
+Employee IDs and department `provider` remain stable. `avatar` describes appearance, `executor` describes the default execution tool; these defaults do not launch a CLI or prove access. No scheduler, Drive synchronization, provider call or paid deployment is activated by folder connection. Existing browser task records remain separate manual records and are not migrated automatically.
+
+
+## Synthetic processing cycle (no AI calls)
+
+From the repository root run:
+
+```sh
+node scripts/demo-local-jobs.mjs /workspace/BB_Office_Demo
+```
+
+All generated inputs and results stay outside the repository. This creates three synthetic jobs: validated total awaiting approval, missing price waiting for input, and a mismatched total that fails validation. Run the command again to confirm deduplication. In the office connect the generated `jobs` directory; a browser on your own PC can only select folders on that PC, so run the demo locally there or securely copy the synthetic directory there first. No cloud folder is automatically mounted to your PC.
+
+After recording a human decision in the office, rerun the demo command to apply it. Successful verification alone never grants approval. A revision request remains `revising`; revised inputs must be registered as a new version. Prior versions are flagged in the viewer and cannot be finalized by the executor after a newer registration. No schedule or provider call is installed.
+
+`runtime/local-jobs.mjs` exposes registration, explicit processing, decision application and summaries. Inputs use integer cents and positive integer quantities; a supplied comparison total must match. Input contents, source identity and rule version form the deduplication key. Preserved inputs are checked before processing. Only `TemporaryError` is eligible for bounded retries (default three attempts); another explicit run after `nextRetryAt` is required. Rule/input failures are never retried automatically. Output is not published unless validation succeeds.
+
+Per-job filesystem locks exclude cooperating runners. If a process is killed its lock can remain. The viewer marks running/validating jobs with no execution update for five minutes for inspection; this is not proof the process died. Confirm the original process has stopped before manual recovery. Automatic stale-lock removal, distributed execution, Drive synchronization and production scheduling are outside this demonstration.
