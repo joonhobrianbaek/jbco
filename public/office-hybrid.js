@@ -1,4 +1,4 @@
-import {floorHeights,floorFootprints,zoneFloor,liftedReportRoute} from './office-floors.js';
+import {floorHeights,floorFootprints,stairs,zoneFloor,liftedReportRoute} from './office-floors.js';
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 import {roamingStaff,ambientRoute} from './ambient-routes.js?v=1';
@@ -73,14 +73,33 @@ for(const object of [...scene.children]){
 }
 function floorBox(color,x,y,z,w,h,d,floor){const object=box(color,x,y+floorHeights[floor],z,w,h,d);object.userData.floor=floor;return object;}
 function floorLabel(text,x,y,z,width,floor){const object=label(text,x,y+floorHeights[floor],z,width);object.userData.floor=floor;return object;}
-// Limestone slabs, graphite frames and walnut fittings keep the office professional.
+// Upper floor slabs surround an open stairwell; no slab cuts across the flights.
 for(const floor of [1,2]){
- const {x,z,width,depth}=floorFootprints[floor];
- floorBox('#b8b6ad',x,-.22,z,width,.34,depth,floor);
- floorBox(floor===2?'#d9d1c1':'#e3e1d8',x,-.025,z,width-.2,.08,depth-.2,floor);
- for(const edge of [x-width/2+.15,x+width/2-.15])floorBox('#384841',edge,.48,z,.055,.95,depth-.3,floor);
- floorBox('#384841',x,.48,z-depth/2+.15,width-.3,.95,.055,floor);
- floorBox('#a18a64',x,-.13,z+depth/2-.03,width,.12,.04,floor);
+ const {x,z,width,depth}=floorFootprints[floor],l=x-width/2,r=x+width/2,back=z-depth/2,front=z+depth/2;
+ const slab=(color,y,h,pad=0)=>{
+  for(const [cx,cz,w,d]of [[(l+stairs.left)/2,z,stairs.left-l,depth],[(stairs.right+r)/2,z,r-stairs.right,depth],[(stairs.left+stairs.right)/2,(back+stairs.back)/2,stairs.right-stairs.left,stairs.back-back],[(stairs.left+stairs.right)/2,(stairs.front+front)/2,stairs.right-stairs.left,front-stairs.front]])floorBox(color,cx,y,cz,w-pad,h,d-pad,floor);
+ };
+ slab('#b8b6ad',-.22,.34);slab(floor===2?'#d9d1c1':'#e3e1d8',-.025,.08);
+ for(const edge of [l+.15,r-.15])floorBox('#384841',edge,.48,z,.055,.95,depth-.3,floor);
+ floorBox('#384841',x,.48,back+.15,width-.3,.95,.055,floor);floorBox('#a18a64',x,-.13,front-.03,width,.12,.04,floor);
+}
+// Walnut treads, half-height landings and graphite balustrades on two switchback stairs.
+for(const floor of [0,1]){
+ const base=floorHeights[floor],rise=2.2/stairs.steps,run=(stairs.startZ-stairs.endZ)/stairs.steps;
+ for(let i=0;i<stairs.steps;i++){
+  const y=base+rise*(i+.5),z=stairs.startZ-run*(i+.5);
+  const tread=box('#c6a576',stairs.lowerX,y,z,stairs.width,rise,run);tread.userData.floor=floor;
+  const upper=box('#c6a576',stairs.upperX,base+2.2+rise*(i+.5),stairs.endZ+run*(i+.5),stairs.width,rise,run);upper.userData.floor=floor;
+ }
+ floorBox('#b5a183',(stairs.lowerX+stairs.upperX)/2,2.14,-1.55,1.75,.12,.5,floor);
+ for(const [x,ascending]of [[stairs.left,true],[stairs.right,false]]){
+  for(let i=0;i<=stairs.steps;i++){
+   const z=ascending?stairs.startZ-run*i:stairs.endZ+run*i,y=base+(ascending?0:2.2)+rise*i;
+   const post=box('#43534b',x,y+.45,z,.035,.9,.035);post.userData.floor=floor;
+  }
+  const rail=box('#43534b',x,base+(ascending?1.1:3.3)+.9,.7,.055,.055,Math.hypot(4,2.2));rail.rotation.x=ascending?Math.atan2(2.2,4):-Math.atan2(2.2,4);rail.userData.floor=floor;
+ }
+ floorLabel(`${floor+1}F → ${floor+2}F`,3.35,2.85,-1.55,1.2,floor);
 }
 // Collaboration floor: a boardroom, project tables and a quiet library.
 let prior=new Set(scene.children);
@@ -99,13 +118,7 @@ for(const x of [-1.5,.7,2.9,5.1,7.3]){
 }
 floorLabel('03 / EXECUTIVE PENTHOUSE',.2,2.8,-4.8,4.5,2);
 floorLabel('01 / OPERATIONS STUDIO',-4,2.9,-4.8,4.5,0);
-// One continuous lift and slender structural columns reveal the three levels.
-for(const floor of [0,1,2]){
- floorBox('#a8997a',3.65,.025,-2.95,1,.05,1.2,floor);
- floorBox('#43534b',3.1,1.25,-2.95,.055,2.5,1.2,floor);
- floorLabel('LIFT',3.65,2.7,-2.95,1,floor);
-}
-const shaft=new T.Mesh(new T.BoxGeometry(1.1,11.4,1.2),glassMaterial);shaft.position.set(3.65,5.7,-2.95);architecture.add(shaft);
+// Slender columns preserve the stepped silhouette.
 for(const floor of [0,1]){const f=floorFootprints[floor];for(const x of [f.x-f.width/2+.2,f.x+f.width/2-.2])for(const z of [f.z-f.depth/2+.2,f.z+f.depth/2-.2])box('#45564e',x,floorHeights[floor]+2.2,z,.12,4.4,.12,architecture);}
 const floorNav=document.createElement('nav');floorNav.className='office-floor-nav';floorNav.setAttribute('aria-label','오피스 층 선택');
 for(const [key,text] of [['all','전체'],[0,'1F 업무'],[1,'2F 협업'],[2,'3F 대표실']]){const button=document.createElement('button');button.textContent=text;button.dataset.floor=key;button.setAttribute('aria-pressed',String(key==='all'));button.onclick=()=>selectFloor(key);floorNav.append(button);}root.append(floorNav);
@@ -121,7 +134,7 @@ const ui=document.createElement('div');ui.className='hybrid-office-ui';root.appe
 let reportActor=null,home=null,reportDestination=null,reportOpen=null,reportPath=null,reportOwner=false;
 function sprite(){return document.createElement('span');}
 function settleReport(actor,arrived){actor.rotation.y=0;if(arrived){actor.userData.setStanding();actor.userData.floor=reportOwner?2:1;const target=reportOwner?executiveOffice.owner:executiveOffice.chief;actor.rotation.y=Math.atan2(target[0]-actor.position.x,target[1]-actor.position.z);}else{actor.userData.floor=zoneFloor(actor.position.x,actor.position.z);const employee=employees.find(e=>e.id===actor.userData.action);if(employee?.standing){actor.userData.setStanding();actor.rotation.y=actor.userData.homeRotation||0;}else actor.userData.setWalking(false);}}
-function startTrip(points,done){if(!reportActor){done?.();return;}if(points.length<2){reportActor.position.copy(points[0]);settleReport(reportActor,false);moving=null;done?.();invalidate();return;}reportActor.userData.setWalking(true);const to=points.at(-1),distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:reportActor,from:points[0],to:to.clone(),points,duration:Math.max(1400,Math.min(6500,distance*280)),elapsed:0,last:0,done,kind:'report'};
+function startTrip(points,done){if(!reportActor){done?.();return;}if(points.length<2){reportActor.position.copy(points[0]);settleReport(reportActor,false);moving=null;done?.();invalidate();return;}reportActor.userData.setWalking(true);const to=points.at(-1),distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:reportActor,from:points[0],to:to.clone(),points,duration:Math.max(1400,Math.min(18000,distance*360)),elapsed:0,last:0,done,kind:'report'};
  if(reduced.matches){reportActor.position.copy(to);settleReport(reportActor,to.distanceTo(reportDestination)<.001);moving=null;done?.();}invalidate();}
 const movement={visit(report,open){stopAmbient();scheduleAmbient();reportActor=actors.get(report.employeeId);if(!reportActor)return;home=reportActor.position.clone();reportOwner=report.owner;const employee=employees.find(e=>e.id===report.employeeId);const route=buildReportRoute([home.x,home.z],{owner:report.owner,lounge:!!employee?.lounge,standing:!!employee?.standing});reportPath=liftedReportRoute(route,{homeFloor:reportActor.userData.floor,destinationFloor:report.owner?2:1}).map(p=>V(...p));if(selectedFloor!=='all')selectFloor('all');reportDestination=reportPath.at(-1);reportOpen=open;bubble.textContent=report.owner?'대표님, 보고드릴 내용이 있어요.':'비서실장에게 전달할 내용이 있어요.';bubble.onclick=open;startTrip(reportPath,()=>{bubble.hidden=false;invalidate();});},
  returnHome(){bubble.hidden=true;const path=moving?.kind==='report'?[reportActor.position.clone(),...reportPath.slice(0,(moving.segment??0)+1).reverse()]:[...reportPath].reverse();const unique=path.filter((p,i)=>!i||p.distanceTo(path[i-1])>.001);return new Promise(resolve=>startTrip(unique,()=>{reportActor=null;reportPath=null;scheduleAmbient();resolve();}));},
@@ -142,12 +155,21 @@ function scheduleAmbient(delay=12000){clearTimeout(ambientTimer);ambientTimer=nu
 function settleAmbient(){if(!ambient)return;const e=employees.find(e=>e.id===ambient.employeeId);if(e?.standing)ambient.actor.userData.setStanding();else ambient.actor.userData.setWalking(false);ambient.actor.rotation.y=ambient.actor.userData.homeRotation||0;}
 function stopAmbient(){clearTimeout(breakTimer);breakTimer=null;if(!ambient)return;if(moving?.kind==='ambient')moving=null;ambient.actor.position.copy(ambient.home);settleAmbient();ambient=null;invalidate();}
 function holdAmbient(){if(!ambient)return;ambient.actor.userData.setStanding();ambient.actor.rotation.y=Math.atan2(ambient.lookAt[0]-ambient.actor.position.x,ambient.lookAt[1]-ambient.actor.position.z);ambient.phase='break';if(paused||document.hidden)return;breakTimer=setTimeout(()=>{breakTimer=null;returnAmbient();},3000);}
-function ambientTrip(points,done){ambient.actor.userData.setWalking(true);const distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:ambient.actor,from:points[0],to:points.at(-1),points,duration:Math.max(2800,Math.min(6000,distance*600)),elapsed:0,last:0,done,kind:'ambient'};invalidate();}
+function ambientTrip(points,done){ambient.actor.userData.setWalking(true);const distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:ambient.actor,from:points[0],to:points.at(-1),points,duration:Math.max(2800,Math.min(24000,distance*600)),elapsed:0,last:0,done,kind:'ambient'};invalidate();}
 function returnAmbient(){if(!ambient)return;ambient.phase='return';ambientTrip([...ambient.path].reverse(),()=>{if(ambient)ambient.actor.position.copy(ambient.home);settleAmbient();ambient=null;scheduleAmbient();});}
 function beginAmbient(){if(paused||document.hidden||reduced.matches)return;if(moving||reportActor||document.querySelector('dialog[open]')){scheduleAmbient(5000);return;}
  const id=roamingStaff[ambientTurn++%roamingStaff.length];if(!actors.get(id).visible||jobWorkers.has(id)){scheduleAmbient(5000);return;}const actor=actors.get(id),home=actor.position.clone(),route=ambientRoute(id,[home.x,home.z]),path=route.points.map(([x,z])=>V(x,1.08,z));
  ambient={employeeId:id,actor,home,path,place:route.place,lookAt:route.lookAt,phase:'outbound'};ambientTrip(path,holdAmbient);}
 function scheduleWork(delay=3500){clearTimeout(workTimer);workTimer=null;if(paused||document.hidden||reduced.matches)return;workTimer=setTimeout(()=>{if(document.querySelector('dialog[open]')){scheduleWork(3000);return;}workStarted=performance.now();workUntil=workStarted+1800;invalidate();scheduleWork(6000);},delay);}
+const stairDemo=document.createElement('button');stairDemo.textContent='계단 이동 보기';stairDemo.type='button';floorNav.append(stairDemo);
+stairDemo.onclick=()=>{
+ if(moving||reportActor||paused)return;
+ stopAmbient();selectFloor('all');
+ const id='gpt-research-support',actor=actors.get(id),home=actor.position.clone();
+ const points=liftedReportRoute(buildReportRoute([home.x,home.z],{owner:true,standing:true}),{homeFloor:0,destinationFloor:2}).map(p=>V(...p));
+ ambient={employeeId:id,actor,home,path:points,place:'계단 이동 연출',lookAt:executiveOffice.owner,phase:'outbound'};
+ ambientTrip(points,holdAmbient);
+};
 function positionBubble(){if(bubble.hidden||!reportActor)return;const p=reportActor.position.clone().add(V(0,1,0)).project(camera);bubble.style.left=((p.x+1)*root.clientWidth/2)+'px';bubble.style.top=((1-p.y)*root.clientHeight/2)+'px';}
 function invalidate(){if(document.hidden||frame!==null||timer!==null)return;const delay=Math.max(0,1000/(moving||performance.now()<workUntil||jobWorkers.size?12:24)-(performance.now()-lastFrame));timer=setTimeout(()=>{timer=null;frame=requestAnimationFrame(draw);},delay);}
 function draw(time){frame=null;if(document.hidden)return;updateTrip(time);const working=!paused&&!reduced.matches&&(time<workUntil||jobWorkers.size>0);for(const actor of actors.values())actor.userData.animate(time,!paused&&!reduced.matches&&(actor===moving?.actor||(jobWorkers.has(actor.userData.action))||(working&&time<workUntil)));for(const plane of billboards){if(plane.userData.crew)plane.rotation.set(0,Math.atan2(camera.position.x-plane.position.x,camera.position.z-plane.position.z),0);else plane.quaternion.copy(camera.quaternion);}renderer.render(scene,camera);positionBubble();frames++;lastFrame=time;if((moving||working)&&!paused)invalidate();}

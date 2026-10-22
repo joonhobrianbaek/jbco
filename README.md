@@ -2,7 +2,7 @@
 
 ## Three-storey office
 
-The default 3D office now has three physical storeys: an operations studio on 1F, collaboration tables and secretary/meeting space on 2F, and an executive penthouse with a private lounge and planted terrace on 3F. Use the floor selector to isolate each level or view the whole building. CEO reports use the shared vertical lift route, while stable employee IDs, jobs and approval gates remain unchanged. Original village-inspired characters use rounder heads, larger eyes and restrained business outfits; the architecture uses limestone, walnut and graphite. The 2D energy-saving view retains its previous layout.
+The default 3D office now has three physical storeys: an operations studio on 1F, collaboration tables and secretary/meeting space on 2F, and an executive penthouse with a private lounge and planted terrace on 3F. Use the floor selector to isolate each level or view the whole building. CEO reports use the physical two-flight staircases and return along the same stairs, while stable employee IDs, jobs and approval gates remain unchanged. Original village-inspired characters use rounder heads, larger eyes and restrained business outfits; the architecture uses limestone, walnut and graphite. The 2D energy-saving view retains its previous layout.
 
 Validation: syntax checks and 55 tests pass, including every employee’s lift route, return endpoints, same-floor routing and invalid-floor rejection. Browser visual QA was attempted but blocked by disabled WebGL in the preview browser; the final 3D appearance and picking still need verification in a WebGL 2 browser. No production data or schedules were activated.
 
