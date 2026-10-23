@@ -3,7 +3,7 @@ const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;ret
 const open=el('button','작업 폴더');document.querySelector('.header-actions').append(open);
 const dialog=document.createElement('dialog');dialog.id='jobs-dialog';
 const title=el('h2','로컬 작업 폴더'),notice=el('p','jobs 폴더를 선택하세요. 파일은 외부로 전송하지 않으며 연결 중 30초마다 읽습니다. 승인은 decision만 기록합니다. 실행기가 이후 상태를 반영해야 합니다.'),connect=el('button','jobs 폴더 연결'),refresh=el('button','새로고침'),disconnect=el('button','연결 해제'),close=el('button','닫기'),status=el('p','연결 안 됨'),list=el('div','');status.setAttribute('role','status');dialog.append(title,notice,connect,refresh,disconnect,close,status,list);document.body.append(dialog);
-const legend=el('div','배지가 있는 직원만 실제 파일 업무 상태입니다. 나머지 동작은 연출입니다.');legend.className='jobs-legend';document.body.append(legend);
+const legend=el('div','배지가 있는 직원만 실제 파일 업무 상태입니다. 나머지 동작은 연출입니다.');legend.className='jobs-legend';notice.after(legend);
 let directory=null,entries=[],generation=0,busy=false;
 open.onclick=()=>dialog.showModal();window.addEventListener('office-jobs-open',()=>{if(!dialog.open)dialog.showModal();});close.onclick=()=>dialog.close();
 function publish(jobs){window.officeLocalJobs=jobs;window.dispatchEvent(new CustomEvent('office-local-jobs',{detail:jobs}));window.dispatchEvent(new CustomEvent('office-jobs-updated',{detail:jobStates(jobs)}));}
@@ -12,7 +12,18 @@ async function load(){if(!directory||busy)return;busy=true;const current=directo
 connect.onclick=async()=>{try{if(!window.showDirectoryPicker)throw Error('폴더 연결은 지원되는 Chrome 또는 Edge의 보안 연결에서 사용해주세요.');const selected=await window.showDirectoryPicker({mode:'read'});directory=selected;generation++;await load();}catch(error){status.textContent=error.name==='AbortError'?'폴더 선택을 취소했습니다.':error.message;}};
 refresh.onclick=load;disconnect.onclick=()=>{generation++;directory=null;entries=[];render();publish([]);status.textContent='연결 해제됨';};
 setInterval(()=>{if(!document.hidden)void load();},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load();});
-const badges=new Map();const labels={working:'● 작업중',done:'✔ 완료',question:'? 질문',error:'! 오류',approval:'승인 대기'};
-window.addEventListener('office-jobs-updated',event=>{for(const n of badges.values())n.remove();badges.clear();for(const state of event.detail){let badge=badges.get(state.seat);if(!badge){badge=el('span','');badge.className='job-badge';badge.dataset.seat=state.seat;document.body.append(badge);badges.set(state.seat,badge);}badge.textContent+=(badge.textContent?' / ':'')+labels[state.state]+' · '+state.title;}place();});
+const badges=new Map();const labels={working:'작업 중',done:'완료',question:'자료 필요',error:'오류',approval:'승인 대기'};
+window.addEventListener('office-jobs-updated',event=>{
+ for(const n of badges.values())n.remove();badges.clear();
+ const grouped=new Map(),priority={error:0,approval:1,question:2,working:3,done:4};
+ for(const state of event.detail){if(!labels[state.state])continue;if(!grouped.has(state.seat))grouped.set(state.seat,[]);grouped.get(state.seat).push(state);}
+ for(const [seat,states]of grouped){
+  states.sort((a,b)=>priority[a.state]-priority[b.state]);
+  const primary=states[0],badge=el('span',labels[primary.state]+(states.length>1?' +'+(states.length-1):''));
+  badge.className='job-badge';badge.dataset.seat=seat;badge.dataset.state=primary.state;
+  badge.title=states.map(s=>labels[s.state]+' · '+s.title).join('\n');badge.setAttribute('aria-label',badge.title);badge.tabIndex=0;
+  document.body.append(badge);badges.set(seat,badge);
+ }place();
+});
 function place(){for(const [seat,badge]of badges){const light=[...document.querySelectorAll('[data-employee]')].find(e=>e.dataset.employee===seat);const rect=light?.getBoundingClientRect();const point=rect?{x:rect.left+rect.width/2,y:rect.top}:window.officeView?.deskPoint?.(seat);badge.hidden=!point;if(point){badge.style.left=point.x+'px';badge.style.top=point.y+'px';}}}
 setInterval(()=>{if(badges.size&&!document.hidden)place();},100);

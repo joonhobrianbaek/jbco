@@ -10,7 +10,7 @@ import {attachOfficeReports} from './office-reports.js?v=3';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const root=document.querySelector('#office');root.setAttribute('aria-label','3층 BB Office · 1층 업무 · 2층 협업 · 3층 대표 펜트하우스');
 const renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power',alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1));renderer.shadowMap.enabled=false;renderer.setClearColor('#e8e5de');renderer.outputColorSpace=T.SRGBColorSpace;root.append(renderer.domElement);
-const scene=new T.Scene();let selectedFloor='all';const architecture=new T.Group();scene.add(architecture);const camera=new T.OrthographicCamera(-15,15,10,-10,.1,100);camera.position.set(19,17,24);
+const scene=new T.Scene();let selectedFloor='all',showNames=false;const architecture=new T.Group();scene.add(architecture);const camera=new T.OrthographicCamera(-15,15,10,-10,.1,100);camera.position.set(19,17,24);
 const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=false;controls.autoRotate=false;controls.target.set(0,.8,0);controls.minPolarAngle=.3;controls.maxPolarAngle=1.35;controls.minZoom=.55;controls.maxZoom=4;
 scene.add(new T.HemisphereLight('#fff7e4','#667e6b',2.3));const sun=new T.DirectionalLight('#fff6d7',2.1);sun.position.set(-5,12,8);scene.add(sun);
 const grain=document.createElement('canvas');grain.width=512;grain.height=128;const gc=grain.getContext('2d');gc.fillStyle='#c6a576';gc.fillRect(0,0,512,128);for(let i=0;i<260;i++){gc.strokeStyle=i%2?'#f6d6a320':'#714e2d18';gc.beginPath();const y=i*.49;gc.moveTo(0,y);gc.bezierCurveTo(170,y+Math.sin(i)*3,350,y-Math.cos(i)*3,512,y);gc.stroke();}const woodTexture=new T.CanvasTexture(grain);woodTexture.colorSpace=T.SRGBColorSpace;
@@ -21,7 +21,7 @@ function box(color,x,y,z,w,h,d,parent=scene){const mesh=new T.Mesh(boxGeo,mat(co
 function softBox(color,x,y,z,w,h,d,r=.12){const shape=new T.Shape();shape.moveTo(-w/2+r,-d/2);shape.lineTo(w/2-r,-d/2);shape.quadraticCurveTo(w/2,-d/2,w/2,-d/2+r);shape.lineTo(w/2,d/2-r);shape.quadraticCurveTo(w/2,d/2,w/2-r,d/2);shape.lineTo(-w/2+r,d/2);shape.quadraticCurveTo(-w/2,d/2,-w/2,d/2-r);shape.lineTo(-w/2,-d/2+r);shape.quadraticCurveTo(-w/2,-d/2,-w/2+r,-d/2);const geometry=new T.ExtrudeGeometry(shape,{depth:h,bevelEnabled:false,curveSegments:4,steps:1});geometry.translate(0,0,-h/2);geometry.rotateX(-Math.PI/2);const object=new T.Mesh(geometry,mat(color));object.position.set(x,y,z);scene.add(object);return object;}
 const emit=(type,detail)=>window.dispatchEvent(new CustomEvent(type,{detail}));
 function clickable(object,id){object.userData.action=id;pickables.push(object);return object;}
-function label(text,x,y,z,width=2){const c=document.createElement('canvas');c.width=384;c.height=72;const ctx=c.getContext('2d');ctx.fillStyle='#e7eadc';ctx.fillRect(0,0,384,72);ctx.fillStyle='#335443';ctx.font='600 29px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,192,38);const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;const plane=new T.Mesh(new T.PlaneGeometry(width,width*72/384),new T.MeshBasicMaterial({map}));plane.position.set(x,y,z);scene.add(plane);billboards.push(plane);return plane;}
+function label(text,x,y,z,width=2){const c=document.createElement('canvas');c.width=384;c.height=72;const ctx=c.getContext('2d');ctx.fillStyle='#e7eadc';ctx.fillRect(0,0,384,72);ctx.fillStyle='#335443';ctx.font='600 29px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,192,38);const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;const plane=new T.Mesh(new T.PlaneGeometry(width,width*72/384),new T.MeshBasicMaterial({map}));plane.position.set(x,y,z);plane.visible=showNames;scene.add(plane);billboards.push(plane);return plane;}
 box('#425b45',0,-.25,0,21,.35,12.8);box('#e2dfd2',0,-.04,0,20.8,.12,12.6);
 // Individual floorboards add wood detail without texture downloads or shadows.
 for(let z=-6;z<6.2;z+=.75)box('#c7c5b8',0,.025,z,20.6,.012,.018);
@@ -83,23 +83,17 @@ for(const floor of [1,2]){
  for(const edge of [l+.15,r-.15])floorBox('#384841',edge,.48,z,.055,.95,depth-.3,floor);
  floorBox('#384841',x,.48,back+.15,width-.3,.95,.055,floor);floorBox('#a18a64',x,-.13,front-.03,width,.12,.04,floor);
 }
-// Walnut treads, half-height landings and graphite balustrades on two switchback stairs.
-for(const floor of [0,1]){
- const base=floorHeights[floor],rise=2.2/stairs.steps,run=(stairs.startZ-stairs.endZ)/stairs.steps;
- for(let i=0;i<stairs.steps;i++){
-  const y=base+rise*(i+.5),z=stairs.startZ-run*(i+.5);
-  const tread=box('#c6a576',stairs.lowerX,y,z,stairs.width,rise,run);tread.userData.floor=floor;
-  const upper=box('#c6a576',stairs.upperX,base+2.2+rise*(i+.5),stairs.endZ+run*(i+.5),stairs.width,rise,run);upper.userData.floor=floor;
- }
- floorBox('#b5a183',(stairs.lowerX+stairs.upperX)/2,2.14,stairs.endZ-.25,1.75,.12,.5,floor);
- for(const [x,ascending]of [[stairs.left,true],[stairs.right,false]]){
-  for(let i=0;i<=stairs.steps;i++){
-   const z=ascending?stairs.startZ-run*i:stairs.endZ+run*i,y=base+(ascending?0:2.2)+rise*i;
-   const post=box('#43534b',x,y+.45,z,.035,.9,.035);post.userData.floor=floor;
-  }
-  const rail=box('#43534b',x,base+(ascending?1.1:3.3)+.9,(stairs.startZ+stairs.endZ)/2,.055,.055,Math.hypot(4,2.2));rail.rotation.x=ascending?Math.atan2(2.2,4):-Math.atan2(2.2,4);rail.userData.floor=floor;
- }
- floorLabel(`${floor+1}F → ${floor+2}F`,(stairs.left+stairs.right)/2,2.85,stairs.endZ-.25,1.2,floor);
+// Compact glazed lift replaces the stair flights on the far left.
+const liftCabin=new T.Group();scene.add(liftCabin);
+box('#4b5c53',-9.3,.08,-2.15,1.55,.16,1.55,liftCabin);
+box('#9da89e',-10.05,1.2,-2.15,.06,2.4,1.55,liftCabin);
+box('#4b5c53',-9.3,2.4,-2.15,1.55,.08,1.55,liftCabin);
+for(const floor of [0,1,2]){
+ floorBox('#43534a',-10.15,1.45,-2.15,.08,2.9,1.7,floor);
+ floorBox('#43534a',-8.45,1.45,-2.15,.08,2.9,1.7,floor);
+ floorBox('#b69d6b',-9.3,2.9,-1.31,1.8,.1,.08,floor);
+ floorBox('#e3deca',-8.26,1.2,-1.32,.14,.22,.06,floor);
+ floorLabel(`${floor+1}F / LIFT`,-9.3,3.14,-1.3,1.25,floor);
 }
 // Collaboration floor: a boardroom, project tables and a quiet library.
 let prior=new Set(scene.children);
@@ -163,8 +157,51 @@ floorLabel('01 / OPERATIONS STUDIO',-4,2.9,-4.8,4.5,0);
 for(const floor of [0,1]){const f=floorFootprints[floor];for(const x of [f.x-f.width/2+.2,f.x+f.width/2-.2])for(const z of [f.z-f.depth/2+.2,f.z+f.depth/2-.2])box('#45564e',x,floorHeights[floor]+2.2,z,.12,4.4,.12,architecture);}
 const floorNav=document.createElement('nav');floorNav.className='office-floor-nav';floorNav.setAttribute('aria-label','오피스 층 선택');
 for(const [key,text] of [['all','전체'],[0,'1F 업무'],[1,'2F 협업'],[2,'3F 대표실']]){const button=document.createElement('button');button.textContent=text;button.dataset.floor=key;button.setAttribute('aria-pressed',String(key==='all'));button.onclick=()=>selectFloor(key);floorNav.append(button);}root.append(floorNav);
-function selectFloor(floor){selectedFloor=floor;for(const object of scene.children){if(object.userData.floor!==undefined)object.visible=floor==='all'||object.userData.floor===floor;}architecture.visible=floor==='all';for(const button of floorNav.children)button.setAttribute('aria-pressed',String(button.dataset.floor===String(floor)));overview();}
+function selectFloor(floor){selectedFloor=floor;for(const object of scene.children){if(object.userData.floor!==undefined)object.visible=floor==='all'||object.userData.floor===floor;}architecture.visible=floor==='all';syncNames();for(const button of floorNav.children)button.setAttribute('aria-pressed',String(button.dataset.floor===String(floor)));overview();}
 
+function syncNames(){for(const sign of billboards)sign.visible=showNames&&(selectedFloor==='all'||sign.userData.floor===undefined&&selectedFloor===0||sign.userData.floor===selectedFloor);}
+const namesToggle=document.createElement('button');namesToggle.className='office-names-toggle';namesToggle.textContent='이름표';namesToggle.type='button';namesToggle.setAttribute('aria-pressed','false');namesToggle.title='공간·부서 이름표 표시';namesToggle.onclick=()=>{showNames=!showNames;namesToggle.setAttribute('aria-pressed',String(showNames));syncNames();invalidate();};root.append(namesToggle);
+// Facilities: server room, development studio, boardroom and reference library.
+floorBox('#3c4c45',7,.08,-3.7,5.2,.06,4.3,0);
+for(const x of [5.3,6.8,8.3]){
+ floorBox('#25312f',x,1.12,-4.5,1.05,2.2,.85,0);
+ floorBox('#4a5b51',x,1.12,-4.04,.9,2,.035,0);
+ for(let i=0;i<9;i++){
+  floorBox('#202c28',x,.3+i*.2,-4,.8,.12,.03,0);
+  floorBox('#94b9a1',x+.28,.3+i*.2,-3.975,.04,.035,.012,0);
+ }
+}
+for(const x of [4.45,9.55])floorBox('#67776a',x,1.25,-3.7,.045,2.5,4.3,0);
+floorBox('#bba77e',7,.12,-1.55,5.2,.08,.055,0);
+floorLabel('SERVER ROOM',7,2.8,-5.5,2.7,0);
+floorLabel('DEVELOPMENT STUDIO',-2.5,2.8,-3.7,3.7,0);
+for(const x of [-2.9,-1.9,.4,1.4])floorBox('#2b3d36',x,1.25,-1.8,.72,.47,.065,0);
+// Archive cabinets and indexed document boxes alongside the existing shelves.
+for(const x of [-5,-1.8,1.4])for(let i=0;i<5;i++){
+ floorBox('#d8d2bf',x-1+i*.43,.7,-5.37,.34,.5,.25,1);
+ floorBox('#61756a',x-1+i*.43,.73,-5.23,.18,.08,.012,1);
+}
+floorLabel('REFERENCE LIBRARY',-3.3,2.55,-5.35,3.5,1);
+floorLabel('BOARDROOM',7,2.8,2.3,2.5,1);
+// Use remaining floor area for working infrastructure while keeping cross-floor aisles clear.
+// Ground-floor development/test bench: dual displays, hardware cases and tool drawers.
+floorBox('#b79c74',7,.86,3.65,5.1,.14,1.25,0);
+for(const x of [5.1,8.9])floorBox('#45564b',x,.42,3.65,.12,.8,1,0);
+for(const x of [5.65,6.5,7.6,8.45]){floorBox('#283b35',x,1.3,3.8,.7,.5,.07,0);floorBox('#719389',x,1.3,3.85,.61,.4,.015,0);}
+for(const x of [5.7,8.3]){floorBox('#4e5e53',x,.45,4.1,1,.8,.8,0);for(const y of [.25,.48,.7])floorBox('#b5bcae',x,y,4.52,.65,.025,.025,0);}
+floorBox('#3d4e46',7,1.05,3.15,.6,.25,.45,0);
+floorLabel('BUILD / TEST BENCH',7,2.6,4.5,3,0);
+// Second-floor project war room and document staging area occupy the rear-right bay.
+floorBox('#d2d4c7',7,.06,-3.8,5.1,.05,4.2,1);
+floorBox('#bca27a',7,.86,-3.4,3.6,.14,1.45,1);
+for(const x of [5.8,7,8.2])for(const z of [-4.65,-2.2]){floorBox('#4e6255',x,.5,z,.6,.12,.55,1);floorBox('#4e6255',x,.9,z+(z< -3?-.2:.2),.6,.7,.07,1);}
+floorBox('#536b60',7,1.7,-5.65,4.7,1.4,.09,1);
+for(let i=0;i<5;i++)floorBox(['#c9c1a0','#b4c6b8','#d3b9a2'][i%3],5.4+i*.8,1.7,-5.59,.5,.7,.02,1);
+floorLabel('PROJECT ROOM',7,2.8,-5.6,3,1);
+for(const floor of [0,1])for(const x of [-7.5,-6.7]){floorBox('#aab3a4',x,.48,-4.8,.7,.9,.65,floor);floorBox('#e4dfcd',x,.98,-4.8,.7,.08,.65,floor);}
+const roomSelect=document.createElement('select');roomSelect.className='office-room-select';roomSelect.setAttribute('aria-label','공간으로 이동');
+for(const [value,text]of [['','공간 이동'],['server','1F 서버실'],['coding','1F 코딩 공간'],['meeting','2F 회의실'],['archive','2F 자료실'],['penthouse','3F 대표실·카페']]){const option=document.createElement('option');option.value=value;option.textContent=text;roomSelect.append(option);}
+roomSelect.onchange=()=>{const rooms={server:[7,-3.7,0],coding:[-2.5,-.5,0],meeting:[7,2.2,1],archive:[-3.3,-4.5,1],penthouse:[2,-2.5,2]},p=rooms[roomSelect.value];if(!p)return;selectFloor(p[2]);focused='detail';const elevation=floorHeights[p[2]];controls.target.set(p[0],elevation+.8,p[1]);camera.position.set(p[0]+10,elevation+10,p[1]+14);camera.zoom=1.8;camera.updateProjectionMatrix();controls.update();invalidate();};root.append(roomSelect);
 // Original compact game characters: seated bodies, working hands and walking legs.
 function crew(provider,id,x,z,variant=0,lounge=false){const actor=createGameCrew({variant,owner:provider==='owner',lounge});actor.userData.floor=provider==='owner'?2:zoneFloor(x,z);actor.position.set(x,1.08+floorHeights[actor.userData.floor],z);scene.add(actor);clickable(actor,id);actors.set(id,actor);return actor;}
 for(const [i,e]of employees.entries()){const pos=e.standing|| (e.provider==='muse'?[6.85,-.8]:e.lounge?[e.provider==='gpt'?-4.8:-2.8,4.75]:[e.desk[0]-.15,e.desk[1]-.75]);const actor=crew(e.provider,e.id,...pos,i+1,!!e.lounge);if(e.standing){actor.userData.setStanding();actor.rotation.y=e.provider==='claude'?1.3:-1.2;actor.userData.homeRotation=actor.rotation.y;}}
@@ -184,7 +221,7 @@ function sprite(){return document.createElement('span');}
 function settleReport(actor,arrived){actor.rotation.y=0;if(arrived){actor.userData.setStanding();actor.userData.floor=reportOwner?2:1;const target=reportOwner?executiveOffice.owner:executiveOffice.chief;actor.rotation.y=Math.atan2(target[0]-actor.position.x,target[1]-actor.position.z);}else{actor.userData.floor=zoneFloor(actor.position.x,actor.position.z);const employee=employees.find(e=>e.id===actor.userData.action);if(employee?.standing){actor.userData.setStanding();actor.rotation.y=actor.userData.homeRotation||0;}else actor.userData.setWalking(false);}}
 function startTrip(points,done){if(!reportActor){done?.();return;}if(points.length<2){reportActor.position.copy(points[0]);settleReport(reportActor,false);moving=null;done?.();invalidate();return;}reportActor.userData.setWalking(true);const to=points.at(-1),distance=points.slice(1).reduce((sum,p,i)=>sum+p.distanceTo(points[i]),0);moving={actor:reportActor,from:points[0],to:to.clone(),points,duration:Math.max(1400,Math.min(18000,distance*360)),elapsed:0,last:0,done,kind:'report'};
  if(reduced.matches){reportActor.position.copy(to);settleReport(reportActor,to.distanceTo(reportDestination)<.001);moving=null;done?.();}invalidate();}
-const movement={visit(report,open){stopAmbient();scheduleAmbient();reportActor=actors.get(report.employeeId);if(!reportActor)return;home=reportActor.position.clone();reportOwner=report.owner;const employee=employees.find(e=>e.id===report.employeeId);const route=buildReportRoute([home.x,home.z],{owner:report.owner,lounge:!!employee?.lounge,standing:!!employee?.standing});reportPath=liftedReportRoute(route,{homeFloor:reportActor.userData.floor,destinationFloor:report.owner?2:1}).map(p=>V(...p));if(selectedFloor!=='all')selectFloor('all');reportDestination=reportPath.at(-1);reportOpen=open;bubble.textContent=report.owner?'대표님, 보고드릴 내용이 있어요.':'비서실장에게 전달할 내용이 있어요.';bubble.onclick=open;startTrip(reportPath,()=>{bubble.hidden=false;invalidate();});},
+const movement={visit(report,open){stopAmbient();scheduleAmbient();reportActor=actors.get(report.employeeId);if(!reportActor)return;home=reportActor.position.clone();reportOwner=report.owner;const employee=employees.find(e=>e.id===report.employeeId);const route=buildReportRoute([home.x,home.z],{owner:report.owner,lounge:!!employee?.lounge,standing:!!employee?.standing});reportPath=liftedReportRoute(route,{homeFloor:reportActor.userData.floor,destinationFloor:report.owner?2:1}).map(p=>V(...p));if(selectedFloor!=='all')selectFloor('all');reportDestination=reportPath.at(-1);reportOpen=open;bubble.textContent=report.owner?'보고 확인 ↗':'전달 확인 ↗';bubble.onclick=open;startTrip(reportPath,()=>{bubble.hidden=false;invalidate();});},
  returnHome(){bubble.hidden=true;const path=moving?.kind==='report'?[reportActor.position.clone(),...reportPath.slice(0,(moving.segment??0)+1).reverse()]:[...reportPath].reverse();const unique=path.filter((p,i)=>!i||p.distanceTo(path[i-1])>.001);return new Promise(resolve=>startTrip(unique,()=>{reportActor=null;reportPath=null;scheduleAmbient();resolve();}));},
  clear(){moving=null;bubble.hidden=true;if(reportActor&&home){reportActor.position.copy(home);settleReport(reportActor,false);}reportActor=null;reportPath=null;scheduleAmbient();invalidate();},isMoving:()=>moving?.kind==='report'};
 reports=attachOfficeReports({floor:ui,sprite,movement});
@@ -209,18 +246,18 @@ function beginAmbient(){if(paused||document.hidden||reduced.matches)return;if(mo
  const id=roamingStaff[ambientTurn++%roamingStaff.length];if(!actors.get(id).visible||jobWorkers.has(id)){scheduleAmbient(5000);return;}const actor=actors.get(id),home=actor.position.clone(),route=ambientRoute(id,[home.x,home.z]),path=route.points.map(([x,z])=>V(x,1.08,z));
  ambient={employeeId:id,actor,home,path,place:route.place,lookAt:route.lookAt,phase:'outbound'};ambientTrip(path,holdAmbient);}
 function scheduleWork(delay=3500){clearTimeout(workTimer);workTimer=null;if(paused||document.hidden||reduced.matches)return;workTimer=setTimeout(()=>{if(document.querySelector('dialog[open]')){scheduleWork(3000);return;}workStarted=performance.now();workUntil=workStarted+1800;invalidate();scheduleWork(6000);},delay);}
-const stairDemo=document.createElement('button');stairDemo.textContent='계단 이동 보기';stairDemo.type='button';floorNav.append(stairDemo);
+const stairDemo=document.createElement('button');stairDemo.textContent='엘리베이터 이동 보기';stairDemo.type='button';floorNav.append(stairDemo);
 stairDemo.onclick=()=>{
  if(moving||reportActor||paused)return;
  stopAmbient();selectFloor('all');
  const id='gpt-research-support',actor=actors.get(id),home=actor.position.clone();
  const points=liftedReportRoute(buildReportRoute([home.x,home.z],{owner:true,standing:true}),{homeFloor:0,destinationFloor:2}).map(p=>V(...p));
- ambient={employeeId:id,actor,home,path:points,place:'계단 이동 연출',lookAt:executiveOffice.owner,phase:'outbound'};
+ ambient={employeeId:id,actor,home,path:points,place:'엘리베이터 이동 연출',lookAt:executiveOffice.owner,phase:'outbound'};
  ambientTrip(points,holdAmbient);
 };
 function positionBubble(){if(bubble.hidden||!reportActor)return;const p=reportActor.position.clone().add(V(0,1,0)).project(camera);bubble.style.left=((p.x+1)*root.clientWidth/2)+'px';bubble.style.top=((1-p.y)*root.clientHeight/2)+'px';}
 function invalidate(){if(document.hidden||frame!==null||timer!==null)return;const delay=Math.max(0,1000/(moving||performance.now()<workUntil||jobWorkers.size?12:24)-(performance.now()-lastFrame));timer=setTimeout(()=>{timer=null;frame=requestAnimationFrame(draw);},delay);}
-function draw(time){frame=null;if(document.hidden)return;updateTrip(time);const working=!paused&&!reduced.matches&&(time<workUntil||jobWorkers.size>0);for(const actor of actors.values())actor.userData.animate(time,!paused&&!reduced.matches&&(actor===moving?.actor||(jobWorkers.has(actor.userData.action))||(working&&time<workUntil)));for(const plane of billboards){if(plane.userData.crew)plane.rotation.set(0,Math.atan2(camera.position.x-plane.position.x,camera.position.z-plane.position.z),0);else plane.quaternion.copy(camera.quaternion);}renderer.render(scene,camera);positionBubble();frames++;lastFrame=time;if((moving||working)&&!paused)invalidate();}
+function draw(time){frame=null;if(document.hidden)return;updateTrip(time);const working=!paused&&!reduced.matches&&(time<workUntil||jobWorkers.size>0);for(const actor of actors.values())actor.userData.animate(time,!paused&&!reduced.matches&&(actor===moving?.actor||(jobWorkers.has(actor.userData.action))||(working&&time<workUntil)));for(const plane of billboards){if(plane.userData.crew)plane.rotation.set(0,Math.atan2(camera.position.x-plane.position.x,camera.position.z-plane.position.z),0);else plane.quaternion.copy(camera.quaternion);}if(moving&&Math.abs(moving.actor.position.x+9.3)<.1&&Math.abs(moving.actor.position.z+2.15)<.1)liftCabin.position.y=moving.actor.position.y-1.08;liftCabin.visible=selectedFloor==='all'||Math.abs(liftCabin.position.y-floorHeights[selectedFloor])<.2;renderer.render(scene,camera);positionBubble();frames++;lastFrame=time;if((moving||working)&&!paused)invalidate();}
 function fit(){camera.zoom=1;camera.updateMatrixWorld();camera.updateProjectionMatrix();const points=[];for(const x of [-10.5,10.5])for(const y of (selectedFloor==='all'?[0,11.8]:[floorHeights[selectedFloor],floorHeights[selectedFloor]+3.2]))for(const z of [-6.4,6.4])points.push(V(x,y,z).project(camera));const xs=points.map(p=>p.x),ys=points.map(p=>p.y);camera.zoom=Math.min(1.8/(Math.max(...xs)-Math.min(...xs)),1.5/(Math.max(...ys)-Math.min(...ys)));camera.updateProjectionMatrix();}
 function resize(){const w=root.clientWidth,h=root.clientHeight;renderer.setSize(w,h);camera.left=-12*w/h;camera.right=12*w/h;camera.top=12;camera.bottom=-12;camera.updateProjectionMatrix();if(focused==='overview')fit();invalidate();}
 function overview(){focused='overview';const elevation=selectedFloor==='all'?4.6:floorHeights[selectedFloor]+.8;controls.target.set(0,elevation,0);camera.position.set(23,elevation+19,28);controls.update();fit();invalidate();}
@@ -235,7 +272,7 @@ window.addEventListener('office-team',e=>{const p=e.detail==='muse'?[7,0]:employ
 window.addEventListener('office-meeting-view',()=>focus(7,4,1.9));document.querySelector('#fullscreen').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();};
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(workTimer);workTimer=null;workUntil=0;if(frame!==null)cancelAnimationFrame(frame);if(timer!==null)clearTimeout(timer);frame=timer=null;clearTimeout(ambientTimer);clearTimeout(breakTimer);ambientTimer=breakTimer=null;if(moving)moving.last=0;}else{scheduleWork(500);if(ambient?.phase==='break')holdAmbient();else if(!ambient)scheduleAmbient(2500);invalidate();}});
 reduced.addEventListener('change',()=>{if(reduced.matches){clearTimeout(workTimer);workTimer=null;workUntil=0;stopAmbient();clearTimeout(ambientTimer);ambientTimer=null;}else{scheduleAmbient(2500);scheduleWork(500);}invalidate();});
-window.officeView={getState:()=>({webgl:true,renderMode:'hybrid',characterMode:'soft-village-crew',floors:3,selectedFloor,penthouseFloor:3,workAnimation:{active:!paused&&!reduced.matches&&performance.now()<workUntil,started:workStarted,frameCap:12},pixelRatio:renderer.getPixelRatio(),shadows:renderer.shadowMap.enabled,frameCap:24,ambientFrameCap:12,renderedFrames:frames,moving:!!moving,ambient:ambient?{employeeId:ambient.employeeId,phase:ambient.phase,place:ambient.place,position:ambient.actor.position.toArray()}:null,paused,staffCount:employees.length,reports:reports.state(),executiveOffice:{entrance:executiveOffice.entrance,reportSpot:executiveOffice.report,reporter:reportActor?{position:reportActor.position.toArray(),rotation:reportActor.rotation.y,destination:reportOwner?'대표실':'비서실'}:null},drawCalls:renderer.info.render.calls,textures:renderer.info.memory.textures,locations:employees.map(e=>({id:e.id,pose:actors.get(e.id).userData.pose,location:actors.get(e.id)===reportActor?'보고 중':ambient?.employeeId===e.id?(ambient.phase==='break'?ambient.place+' · 서 있음':ambient.place+' 이동'):e.provider==='muse'?'비서실':e.standing?e.station+' · 서 있음':e.lounge?'라운지':'업무석'}))}),deskPoint(id){const object=actors.get(id);if(!object)return null;const p=object.position.clone().project(camera),r=renderer.domElement.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+window.officeView={getState:()=>({webgl:true,renderMode:'hybrid',characterMode:'soft-village-crew',floors:3,selectedFloor,penthouseFloor:3,workAnimation:{active:!paused&&!reduced.matches&&performance.now()<workUntil,started:workStarted,frameCap:12},pixelRatio:renderer.getPixelRatio(),shadows:renderer.shadowMap.enabled,frameCap:24,ambientFrameCap:12,renderedFrames:frames,moving:!!moving,ambient:ambient?{employeeId:ambient.employeeId,phase:ambient.phase,place:ambient.place,position:ambient.actor.position.toArray()}:null,paused,staffCount:employees.length,reports:reports.state(),executiveOffice:{entrance:executiveOffice.entrance,reportSpot:executiveOffice.report,reporter:reportActor?{position:reportActor.position.toArray(),rotation:reportActor.rotation.y,destination:reportOwner?'대표실':'비서실'}:null},drawCalls:renderer.info.render.calls,textures:renderer.info.memory.textures,locations:employees.map(e=>({id:e.id,pose:actors.get(e.id).userData.pose,location:actors.get(e.id)===reportActor?'보고 중':ambient?.employeeId===e.id?(ambient.phase==='break'?ambient.place+' · 서 있음':ambient.place+' 이동'):e.provider==='muse'?'비서실':e.standing?e.station+' · 서 있음':e.lounge?'라운지':'업무석'}))}),deskPoint(id){const object=actors.get(id);if(!object||!object.visible)return null;const p=object.position.clone().add(V(0,1.05,0)).project(camera);if(Math.abs(p.x)>1||Math.abs(p.y)>1||p.z< -1||p.z>1)return null;const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 const meta=document.querySelector('.footer-meta span:last-child');meta.textContent='BB OFFICE · 3 FLOORS · 3층 대표 펜트하우스';document.querySelector('#loading').classList.add('ready');document.querySelector('#loading').hidden=true;overview();resize();
 
 scheduleAmbient(1500);scheduleWork(500);

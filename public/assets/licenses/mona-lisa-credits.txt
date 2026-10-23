@@ -1,6 +1,0 @@
-Mona Lisa (La Gioconda), Leonardo da Vinci, circa 1503–1519. Musée du Louvre.
-The original painting and this faithful reproduction are in the public domain.
-Local JPEG source: Godot demo projects, pinned revision b761b4cd5718a7118f2c95eb55f181d0a5f004f1,
-loading/load_threaded/paintings/painting_mona_lisa.jpg
-https://github.com/godotengine/godot-demo-projects/blob/b761b4cd5718a7118f2c95eb55f181d0a5f004f1/loading/load_threaded/paintings/painting_mona_lisa.jpg
-Displayed at its original aspect ratio within the office's existing wooden frames.

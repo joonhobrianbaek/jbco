@@ -1,6 +1,0 @@
-Jean-Michel Basquiat, Self-Portrait (1982).
-Artwork copyright remains with the Estate of Jean-Michel Basquiat and its rights holders.
-This third-party artwork is not covered by the project's code or model licenses.
-Reference image source (unchanged JPEG, 726 x 600):
-https://github.com/j00les/basquiat-art-gallery/blob/4bfc1d8d64dd221292e91b7a22a726660b660dbf/assets/selfportrait3.jpg
-Displayed at the source image's original aspect ratio inside a wooden frame.
