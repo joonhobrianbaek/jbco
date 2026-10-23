@@ -1,3 +1,4 @@
+import {spinSymbols,slotMessage} from './office-slot.js';
 import {floorHeights,floorFootprints,stairs,zoneFloor,liftedReportRoute} from './office-floors.js';
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
@@ -110,6 +111,40 @@ for(const x of [1.7]){
  floorBox('#a3977c',x,.32,-5.6,1.5,.6,.65,2);
  const leaf=new T.Mesh(new T.SphereGeometry(.65,12,8),mat('#69836a'));leaf.position.set(x,1.1+floorHeights[2],-5.6);leaf.scale.set(1,.8,.6);leaf.userData.floor=2;scene.add(leaf);
 }
+// Free arcade cabinet beside the executive suite.
+const slotCabinet=clickable(floorBox('#30483e',3.05,.95,-4.5,1.05,1.85,.85,2),'arcade-slot');
+floorBox('#b99b60',3.05,1.96,-4.5,1.12,.12,.9,2);
+floorBox('#283d35',3.05,2.16,-4.5,1.05,.3,.82,2);
+floorBox('#d1b16c',3.05,.8,-4.04,1.02,.12,.28,2);
+floorBox('#bfa26a',3.68,1.3,-4.5,.05,.5,.05,2);
+floorBox('#a05743',3.68,1.58,-4.5,.16,.16,.16,2);
+const slotCanvas=document.createElement('canvas');slotCanvas.width=512;slotCanvas.height=256;
+const slotTexture=new T.CanvasTexture(slotCanvas);slotTexture.colorSpace=T.SRGBColorSpace;
+const slotScreen=new T.Mesh(new T.PlaneGeometry(.89,.64),new T.MeshBasicMaterial({map:slotTexture}));slotScreen.position.set(3.05,floorHeights[2]+1.38,-4.062);slotScreen.userData.floor=2;clickable(slotScreen,'arcade-slot');scene.add(slotScreen);
+let slotSpinning=false,slotTimer=null,slotRounds=0;
+const slotDialog=document.createElement('dialog');slotDialog.className='office-slot-dialog';
+const slotHeading=document.createElement('h2');slotHeading.textContent='OFFICE ARCADE';
+const slotNote=document.createElement('p');slotNote.textContent='무료로 즐기는 작은 휴식';
+const slotReels=document.createElement('div');slotReels.className='slot-reels';slotReels.setAttribute('role','img');slotReels.setAttribute('aria-label','슬롯 릴');
+const slotResult=document.createElement('p');slotResult.setAttribute('role','status');slotResult.textContent='레버 대신 버튼을 눌러보세요.';
+const slotSpin=document.createElement('button');slotSpin.textContent='돌리기';slotSpin.type='button';
+const slotVisit=document.createElement('button');slotVisit.textContent='직원 놀러오기';slotVisit.type='button';
+const slotClose=document.createElement('button');slotClose.textContent='닫기';slotClose.type='button';slotClose.onclick=()=>slotDialog.close();
+slotDialog.append(slotHeading,slotNote,slotReels,slotResult,slotSpin,slotVisit,slotClose);document.body.append(slotDialog);
+function paintSlots(symbols){const ctx=slotCanvas.getContext('2d');ctx.fillStyle='#f4eedc';ctx.fillRect(0,0,512,256);ctx.fillStyle='#344b3c';ctx.font='bold 28px Arial';ctx.textAlign='center';ctx.fillText('BB  /  BREAK TIME',256,42);ctx.font='76px Arial';symbols.forEach((symbol,i)=>ctx.fillText(symbol,90+i*166,167));slotTexture.needsUpdate=true;slotReels.textContent=symbols.join('  ');slotReels.setAttribute('aria-label',symbols.join(' · '));invalidate();}
+function spinSlot(){if(slotSpinning)return;slotSpinning=true;slotSpin.disabled=true;slotResult.textContent='돌아가는 중…';let tick=0;clearInterval(slotTimer);slotTimer=setInterval(()=>{const symbols=spinSymbols();paintSlots(symbols);if(++tick>=12){clearInterval(slotTimer);slotTimer=null;slotSpinning=false;slotSpin.disabled=false;slotRounds++;slotResult.textContent=slotMessage(symbols);}},85);}
+slotSpin.onclick=spinSlot;paintSlots(['🍒','⭐','🔔']);
+function openSlot(){if(!slotDialog.open)slotDialog.showModal();}
+slotVisit.onclick=()=>{
+ if(moving||reportActor||paused||document.hidden){slotResult.textContent='직원이 이동 중입니다. 잠시 후 다시 눌러주세요.';return;}
+ const employee=employees.find(e=>e.standing&&!jobWorkers.has(e.id));if(!employee){slotResult.textContent='지금은 모두 작업 중이에요.';return;}
+ stopAmbient();selectFloor('all');const actor=actors.get(employee.id),home=actor.position.clone();
+ const path=liftedReportRoute(buildReportRoute([home.x,home.z],{owner:true,standing:true}),{homeFloor:actor.userData.floor,destinationFloor:2}).slice(0,-2).map(p=>V(...p));
+ path.push(V(3.05,9.88,-2.95),V(3.05,9.88,-3.35));
+ ambient={employeeId:employee.id,actor,home,path,place:'아케이드 휴식',lookAt:[3.05,-4.5],phase:'outbound'};
+ slotDialog.close();ambientTrip(path,()=>{spinSlot();holdAmbient();});
+};
+floorLabel('OFFICE ARCADE',3.05,2.65,-4.5,1.8,2);
 // Private hospitality lounge on the penthouse: a staffed bar and espresso counter.
 floorBox('#49392f',-4.8,.55,-2.6,5.8,1.05,.86,2);
 floorBox('#d7d1c4',-4.8,1.12,-2.6,6,.12,1.05,2);
@@ -200,8 +235,8 @@ for(let i=0;i<5;i++)floorBox(['#c9c1a0','#b4c6b8','#d3b9a2'][i%3],5.4+i*.8,1.7,-
 floorLabel('PROJECT ROOM',7,2.8,-5.6,3,1);
 for(const floor of [0,1])for(const x of [-7.5,-6.7]){floorBox('#aab3a4',x,.48,-4.8,.7,.9,.65,floor);floorBox('#e4dfcd',x,.98,-4.8,.7,.08,.65,floor);}
 const roomSelect=document.createElement('select');roomSelect.className='office-room-select';roomSelect.setAttribute('aria-label','공간으로 이동');
-for(const [value,text]of [['','공간 이동'],['server','1F 서버실'],['coding','1F 코딩 공간'],['meeting','2F 회의실'],['archive','2F 자료실'],['penthouse','3F 대표실·카페'],['jonathan','3F Jonathan · 바 자리']]){const option=document.createElement('option');option.value=value;option.textContent=text;roomSelect.append(option);}
-roomSelect.onchange=()=>{const rooms={server:[7,-3.7,0],coding:[-2.5,-.5,0],meeting:[7,2.2,1],archive:[-3.3,-4.5,1],penthouse:[2,-2.5,2],jonathan:[-5.2,-1.35,2]},p=rooms[roomSelect.value];if(!p)return;selectFloor(p[2]);focused='detail';const elevation=floorHeights[p[2]];controls.target.set(p[0],elevation+.8,p[1]);camera.position.set(p[0]+10,elevation+10,p[1]+14);camera.zoom=1.8;camera.updateProjectionMatrix();controls.update();invalidate();};root.append(roomSelect);
+for(const [value,text]of [['','공간 이동'],['server','1F 서버실'],['coding','1F 코딩 공간'],['meeting','2F 회의실'],['archive','2F 자료실'],['penthouse','3F 대표실·카페'],['jonathan','3F Jonathan · 바 자리'],['arcade','3F 슬롯머신']]){const option=document.createElement('option');option.value=value;option.textContent=text;roomSelect.append(option);}
+roomSelect.onchange=()=>{const rooms={server:[7,-3.7,0],coding:[-2.5,-.5,0],meeting:[7,2.2,1],archive:[-3.3,-4.5,1],penthouse:[2,-2.5,2],jonathan:[-5.2,-1.35,2],arcade:[3.05,-4.5,2]},p=rooms[roomSelect.value];if(!p)return;selectFloor(p[2]);focused='detail';const elevation=floorHeights[p[2]];controls.target.set(p[0],elevation+.8,p[1]);camera.position.set(p[0]+10,elevation+10,p[1]+14);camera.zoom=1.8;camera.updateProjectionMatrix();controls.update();invalidate();};root.append(roomSelect);
 // Original compact game characters: seated bodies, working hands and walking legs.
 function crew(provider,id,x,z,variant=0,lounge=false){const actor=createGameCrew({variant,owner:provider==='owner',lounge});actor.userData.floor=provider==='owner'?2:zoneFloor(x,z);actor.position.set(x,1.08+floorHeights[actor.userData.floor],z);scene.add(actor);clickable(actor,id);actors.set(id,actor);return actor;}
 for(const [i,e]of employees.entries()){const pos=e.standing|| (e.provider==='muse'?[6.85,-.8]:e.lounge?[e.provider==='gpt'?-4.8:-2.8,4.75]:[e.desk[0]-.15,e.desk[1]-.75]);const actor=crew(e.provider,e.id,...pos,i+1,!!e.lounge);if(e.standing){actor.userData.setStanding();actor.rotation.y=e.provider==='claude'?1.3:-1.2;actor.userData.homeRotation=actor.rotation.y;}}
@@ -274,14 +309,14 @@ function focus(x,z,zoom=1.8){const floor=zoneFloor(x,z);selectFloor(floor);focus
 controls.addEventListener('change',invalidate);new ResizeObserver(resize).observe(root);
 const ray=new T.Raycaster(),mouse=new T.Vector2();let down;
 function hit(event){const rect=renderer.domElement.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(mouse,camera);return ray.intersectObjects(pickables,true).find(hit=>{for(let object=hit.object;object;object=object.parent)if(!object.visible)return false;return true;})?.object;}
-renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);renderer.domElement.addEventListener('pointerup',e=>{if(down&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<5){let object=hit(e);while(object&&!object.userData.action)object=object.parent;const id=object?.userData.action;if(id?.startsWith('team:'))emit('office-team-open',id.slice(5));else if(id==='dashboard')emit('office-dashboard-open');else if(id==='meeting')emit('office-meeting-open');else if(id){if(reportActor===object&&reportOpen)reportOpen();else emit('office-assign',id);}}down=null;});
+renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);renderer.domElement.addEventListener('pointerup',e=>{if(down&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<5){let object=hit(e);while(object&&!object.userData.action)object=object.parent;const id=object?.userData.action;if(id?.startsWith('team:'))emit('office-team-open',id.slice(5));else if(id==='arcade-slot')openSlot();else if(id==='dashboard')emit('office-dashboard-open');else if(id==='meeting')emit('office-meeting-open');else if(id){if(reportActor===object&&reportOpen)reportOpen();else emit('office-assign',id);}}down=null;});
 for(const id of ['owner-profile','owner-view'])document.getElementById(id).onclick=()=>focus(7.1,-3.65,2.65);document.querySelector('#lounge-view').onclick=()=>focus(-3.8,4.5,2);document.querySelector('#staff-view').onclick=()=>focus(-3.5,-.5,1.7);document.querySelector('#reset-view').onclick=overview;
 const motion=document.querySelector('#motion');motion.textContent='Ⅱ';motion.onclick=()=>{paused=!paused;if(paused){clearTimeout(workTimer);workTimer=null;workUntil=0;}else scheduleWork(300);motion.textContent=paused?'▶':'Ⅱ';motion.setAttribute('aria-pressed',String(paused));if(moving)moving.last=0;if(paused){clearTimeout(ambientTimer);clearTimeout(breakTimer);ambientTimer=breakTimer=null;}else if(ambient?.phase==='break')holdAmbient();else if(!ambient)scheduleAmbient(2500);invalidate();};
 window.addEventListener('office-team',e=>{const p=e.detail==='muse'?[7,0]:employees.find(a=>a.provider===e.detail&&a.desk)?.desk;if(p)focus(...p,1.7);});
 window.addEventListener('office-meeting-view',()=>focus(7,4,1.9));document.querySelector('#fullscreen').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();};
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(workTimer);workTimer=null;workUntil=0;if(frame!==null)cancelAnimationFrame(frame);if(timer!==null)clearTimeout(timer);frame=timer=null;clearTimeout(ambientTimer);clearTimeout(breakTimer);ambientTimer=breakTimer=null;if(moving)moving.last=0;}else{scheduleWork(500);if(ambient?.phase==='break')holdAmbient();else if(!ambient)scheduleAmbient(2500);invalidate();}});
 reduced.addEventListener('change',()=>{if(reduced.matches){clearTimeout(workTimer);workTimer=null;workUntil=0;stopAmbient();clearTimeout(ambientTimer);ambientTimer=null;}else{scheduleAmbient(2500);scheduleWork(500);}invalidate();});
-window.officeView={getState:()=>({webgl:true,renderMode:'hybrid',characterMode:'soft-village-crew',floors:3,selectedFloor,penthouseFloor:3,coworkers:[{id:'coworker-jonathan',name:'Jonathan',floor:3,location:'바 스툴',pose:'seated'}],workAnimation:{active:!paused&&!reduced.matches&&performance.now()<workUntil,started:workStarted,frameCap:12},pixelRatio:renderer.getPixelRatio(),shadows:renderer.shadowMap.enabled,frameCap:24,ambientFrameCap:12,renderedFrames:frames,moving:!!moving,ambient:ambient?{employeeId:ambient.employeeId,phase:ambient.phase,place:ambient.place,position:ambient.actor.position.toArray()}:null,paused,staffCount:employees.length,reports:reports.state(),executiveOffice:{entrance:executiveOffice.entrance,reportSpot:executiveOffice.report,reporter:reportActor?{position:reportActor.position.toArray(),rotation:reportActor.rotation.y,destination:reportOwner?'대표실':'비서실'}:null},drawCalls:renderer.info.render.calls,textures:renderer.info.memory.textures,locations:employees.map(e=>({id:e.id,pose:actors.get(e.id).userData.pose,location:actors.get(e.id)===reportActor?'보고 중':ambient?.employeeId===e.id?(ambient.phase==='break'?ambient.place+' · 서 있음':ambient.place+' 이동'):e.provider==='muse'?'비서실':e.standing?e.station+' · 서 있음':e.lounge?'라운지':'업무석'}))}),deskPoint(id){const object=actors.get(id);if(!object||!object.visible)return null;const p=object.position.clone().add(V(0,1.05,0)).project(camera);if(Math.abs(p.x)>1||Math.abs(p.y)>1||p.z< -1||p.z>1)return null;const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+window.officeView={getState:()=>({webgl:true,renderMode:'hybrid',characterMode:'soft-village-crew',floors:3,selectedFloor,penthouseFloor:3,arcade:{rounds:slotRounds,spinning:slotSpinning},coworkers:[{id:'coworker-jonathan',name:'Jonathan',floor:3,location:'바 스툴',pose:'seated'}],workAnimation:{active:!paused&&!reduced.matches&&performance.now()<workUntil,started:workStarted,frameCap:12},pixelRatio:renderer.getPixelRatio(),shadows:renderer.shadowMap.enabled,frameCap:24,ambientFrameCap:12,renderedFrames:frames,moving:!!moving,ambient:ambient?{employeeId:ambient.employeeId,phase:ambient.phase,place:ambient.place,position:ambient.actor.position.toArray()}:null,paused,staffCount:employees.length,reports:reports.state(),executiveOffice:{entrance:executiveOffice.entrance,reportSpot:executiveOffice.report,reporter:reportActor?{position:reportActor.position.toArray(),rotation:reportActor.rotation.y,destination:reportOwner?'대표실':'비서실'}:null},drawCalls:renderer.info.render.calls,textures:renderer.info.memory.textures,locations:employees.map(e=>({id:e.id,pose:actors.get(e.id).userData.pose,location:actors.get(e.id)===reportActor?'보고 중':ambient?.employeeId===e.id?(ambient.phase==='break'?ambient.place+' · 서 있음':ambient.place+' 이동'):e.provider==='muse'?'비서실':e.standing?e.station+' · 서 있음':e.lounge?'라운지':'업무석'}))}),deskPoint(id){const object=actors.get(id);if(!object||!object.visible)return null;const p=object.position.clone().add(V(0,1.05,0)).project(camera);if(Math.abs(p.x)>1||Math.abs(p.y)>1||p.z< -1||p.z>1)return null;const r=renderer.domElement.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 const meta=document.querySelector('.footer-meta span:last-child');meta.textContent='BB OFFICE · 3 FLOORS · 3층 대표 펜트하우스';document.querySelector('#loading').classList.add('ready');document.querySelector('#loading').hidden=true;overview();resize();
 
 scheduleAmbient(1500);scheduleWork(500);
