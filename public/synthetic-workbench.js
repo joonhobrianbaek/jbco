@@ -1,5 +1,5 @@
 import {executeSynthetic,decideSynthetic} from './synthetic-engine.js';
-import {jobStates,validateJob} from './jobs-source.js?v=2';
+import {jobStates,validateJob} from './jobs-source.js?v=3';
 const stateNames={received:'접수',awaiting_approval:'대표 승인 대기',waiting_input:'자료 대기',failed:'실패',approved:'대표 승인 완료',revising:'수정 요청'},verificationNames={passed:'통과',failed:'실패',unrun:'미검증'};
 const key='bb-office-synthetic-v1',node=(tag,text)=>{const e=document.createElement(tag);e.textContent=text;return e;};
 const dialog=node('dialog','');dialog.id='synthetic-workbench';dialog.className='synthetic-workbench';
