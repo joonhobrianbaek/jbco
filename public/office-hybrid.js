@@ -7,7 +7,7 @@ import {furnishOffice} from './office-furnishings.js?v=2';
 import {executiveOffice,buildReportRoute} from './report-routes.js?v=2';
 import {createGameCrew} from './game-crew.js?v=3';
 import {employees} from './employees.js?v=2';
-import {attachOfficeReports} from './office-reports.js?v=3';
+import {attachOfficeReports} from './office-reports.js?v=4';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const root=document.querySelector('#office');root.setAttribute('aria-label','3층 BB Office · 1층 업무 · 2층 협업 · 3층 대표 펜트하우스');
 const renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power',alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1));renderer.shadowMap.enabled=false;renderer.setClearColor('#e8e5de');renderer.outputColorSpace=T.SRGBColorSpace;root.append(renderer.domElement);
