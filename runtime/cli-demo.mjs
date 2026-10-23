@@ -20,17 +20,21 @@ export async function callCli(provider,prompt,{cwd,timeoutMs=300000}={}){
  const command=batch?(process.env.ComSpec||'cmd.exe'):exe;
  const argv=batch?['/d','/s','/c',`""${exe}" ${args.map(a=>'"'+a+'"').join(' ')}"`]:args;
  const output=await new Promise((accept,reject)=>{
-  const child=spawn(command,argv,{cwd,windowsHide:true,shell:false,stdio:['pipe','pipe','pipe']});let stdout='',bytes=0,settled=false;
+  const child=spawn(command,argv,{cwd,windowsHide:true,windowsVerbatimArguments:batch,shell:false,stdio:['pipe','pipe','pipe']});let stdout='',stderr='',bytes=0,settled=false;
   const finish=(error,value)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):accept(value);};
   const timer=setTimeout(()=>{child.kill();finish(new Error(`${provider} timed out. Check the local CLI before retrying.`));},timeoutMs);
   child.on('error',error=>finish(new Error(`${provider} launch failed: ${error.message}`)));
   child.stdout.on('data',data=>{bytes+=data.length;if(bytes>2*1024*1024){child.kill();finish(new Error('CLI output exceeded 2 MB.'));}else stdout+=data.toString();});
-  child.stderr.on('data',()=>{}); // Do not print authentication diagnostics or raw credentials.
+  child.stderr.on('data',data=>{stderr=(stderr+data.toString()).slice(-4000);});
   child.stdin.on('error',()=>{});
-  child.on('close',code=>finish(code===0?null:new Error(`${provider} exited ${code}. Run its auth/status command locally.`),stdout));
+  child.on('close',code=>finish(code===0?null:new Error(`${provider} exited ${code}. ${safeCliDiagnostic(stderr||stdout)}`),stdout));
   child.stdin.end(prompt);
  });
  return parseCliOutput(provider,output);
+}
+/** Bound local error details and redact common credential forms before persistence. */
+export function safeCliDiagnostic(value){
+ return String(value).replace(/(?:sk-|ghp_|github_pat_)[A-Za-z0-9_-]+/g,'[REDACTED]').replace(/(Bearer\s+)\S+/gi,'$1[REDACTED]').replace(/((?:api[_-]?key|access[_-]?token|refresh[_-]?token|authorization)["']?\s*[:=]\s*["']?)[^\s"',}]+/gi,'$1[REDACTED]').slice(-2000).trim()||'No diagnostic output. Test the CLI directly.';
 }
 /** Extract only the model's final response from CLI JSON/JSONL. */
 export function parseCliOutput(provider,output){

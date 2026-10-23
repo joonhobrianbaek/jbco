@@ -7,5 +7,10 @@ if errorlevel 1 (
  pause
  exit /b 1
 )
+if not exist scripts\run-cli-demo.mjs (
+ echo Extract ALL files from BB_Office_PC.zip before running this launcher.
+ pause
+ exit /b 1
+)
 node scripts\run-cli-demo.mjs
 pause
