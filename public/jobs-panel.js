@@ -1,4 +1,4 @@
-import {readJobs,jobStates,writeDecision} from './jobs-source.js?v=3';
+import {readJobs,jobStates,writeDecision} from './jobs-source.js?v=4';
 import {createFolderStore,restoreFolder} from './remembered-folder.js';
 const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n;};
 const open=el('button','작업 폴더');document.querySelector('.header-actions').append(open);
@@ -22,6 +22,12 @@ function render(){list.replaceChildren();for(const entry of entries){
  if(job.executor==='local-cli'&&job.result?.review)card.append(el('p','Claude 검토: '+(job.result.review.verdict==='pass'?'통과':'실패')));
  if(job.executor==='local-cli'&&job.result){const details=el('details',''),summary=el('summary','분석·검토 내용 보기');details.append(summary,el('p',job.result.draft?.summary||'분석 요약 없음'),el('p',job.result.review?.note||'검토 메모 없음'));card.append(details);}
  if(['validating','received','planned','drafted'].includes(job.status)&&Date.now()-Date.parse(job.lastCheckedAt)>300000)card.append(el('p','5분 이상 실행 갱신이 없습니다. 실행기 상태를 확인해주세요.'));
+ if(job.taskType==='synthetic-meeting'){
+  if(job.status==='received')card.append(el('p','접수만 완료 · PC에서 RUN_MEETING_DEMO.cmd를 실행해주세요.'));
+  const original=el('details','');original.append(el('summary','가상 회의 원문 보기'));for(const n of job.input?.notes||[])original.append(el('p',n.id+' · '+n.text));card.append(original);
+  for(const task of job.result?.draft?.tasks||[])card.append(el('p',task.action+' · 담당 '+task.owner+' · 기한 '+task.due));
+  for(const decision of job.result?.draft?.decisions||[])card.append(el('p','결정 필요: '+decision.question));
+ }
  if(job.errorSummary)card.append(el('p',job.errorSummary));
  for(const s of jobStates([job]))if(s.state!=='approval')card.append(el('p',(({'gpt-analysis':'Codex 분석','claude-review':'Claude 검토'})[s.seat]||s.seat)+' · '+(s.state==='done'?'완료':s.state)));
  if(!stale&&job.status==='awaiting_approval'&&job.decision.action===null){
@@ -44,16 +50,18 @@ async function choose(){if(!window.showDirectoryPicker)throw Error('폴더 연�
 async function connectFolder(replace=false){
  changing=true;controls();try{
   const selected=replace||!directory?await choose():directory;
+  if(selected.name!=='jobs')throw Error('개별 업무 폴더가 아닌 jobs 폴더를 선택해주세요.');
   if(await selected.queryPermission({mode:'read'})!=='granted'&&await selected.requestPermission({mode:'read'})!=='granted')throw Error('폴더 읽기 권한을 허용해주세요.');
   generation++;directory=selected;canRead=true;entries=[];persistenceWarning='';
   try{await persist(()=>store.set(selected));}catch{persistenceWarning=' · 폴더 기억 실패: 다음 접속 때 다시 선택해야 합니다.';}
   await load();
  }catch(error){status.textContent=error.name==='AbortError'?'폴더 선택을 취소했습니다.':error.message;}finally{changing=false;controls();}
 }
+window.addEventListener('office-local-refresh',()=>{void load();});
 connect.onclick=()=>connectFolder();change.onclick=()=>connectFolder(true);refresh.onclick=load;
 disconnect.onclick=async()=>{generation++;directory=null;canRead=false;entries=[];render();publish([]);controls();try{await persist(()=>store.clear());status.textContent='연결 해제됨 · 저장된 폴더도 지웠습니다.';}catch{status.textContent='연결 해제됨 · 폴더 기억 삭제 실패. 브라우저 사이트 데이터를 확인해주세요.';}};
 changing=true;controls();
-(async()=>{try{const saved=await restoreFolder(store);directory=saved.handle;canRead=saved.granted;if(canRead)await load();else status.textContent=directory?'기억한 폴더: '+directory.name+' · 저장된 폴더 다시 연결을 눌러 권한만 확인해주세요.':'처음 한 번 jobs 폴더를 선택해주세요.';}catch(error){status.textContent='폴더 복원 실패: '+error.message;}finally{changing=false;controls();}})();
+(async()=>{try{const saved=await restoreFolder(store);directory=saved.handle;canRead=saved.granted;if(directory&&directory.name!=='jobs'){directory=null;canRead=false;throw Error('기억한 폴더가 jobs가 아닙니다. jobs 폴더를 다시 선택해주세요.');}if(canRead)await load();else status.textContent=directory?'기억한 폴더: '+directory.name+' · 저장된 폴더 다시 연결을 눌러 권한만 확인해주세요.':'처음 한 번 jobs 폴더를 선택해주세요.';}catch(error){status.textContent='폴더 복원 실패: '+error.message;}finally{changing=false;controls();}})();
 setInterval(()=>{if(!document.hidden)void load();},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load();});
 const badges=new Map();const labels={working:'작업 중',done:'완료',question:'자료 필요',error:'오류',approval:'승인 대기'};
 window.addEventListener('office-jobs-updated',event=>{

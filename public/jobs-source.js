@@ -1,5 +1,6 @@
 import {employees} from './employees.js';
 import {decideLocalCli} from './local-cli-decision.js';
+import {decideMeeting} from './meeting-demo-core.js';
 const seats=new Set(employees.map(e=>e.id));
 const statuses=new Set(['received','planned','drafted','reviewed','awaiting_approval','revising','approved','failed','waiting_input','retry_pending','validating']);
 export function validateJob(job){
@@ -26,7 +27,7 @@ export async function writeDecision(entry,action,note,now=new Date().toISOString
  const file=await entry.handle.getFileHandle('job.json');const current=await (await file.getFile()).text();
  if(current!==entry.snapshot)throw Error('파일이 변경되었습니다. 새로고침 후 다시 결정해주세요.');
  const job=validateJob(JSON.parse(current));if(job.status!=='awaiting_approval'||job.decision.action!==null)throw Error('미결정 승인 대기 업무만 결정할 수 있습니다.');
- const updated=job.executor==='local-cli'?decideLocalCli(job,action,note,now):{...job,decision:{action,note:note.trim(),at:now}};
+ const updated=job.executor==='local-cli'?(job.taskType==='synthetic-meeting'?decideMeeting(job,action,note,now):decideLocalCli(job,action,note,now)):{...job,decision:{action,note:note.trim(),at:now}};
  const writer=await file.createWritable();try{await writer.write(JSON.stringify(updated,null,2)+'\n');await writer.close();}catch(error){await writer.abort().catch(()=>{});throw error;}
  return updated;
 }
