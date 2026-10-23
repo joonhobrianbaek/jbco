@@ -16,6 +16,7 @@ const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamp
 scene.add(new T.HemisphereLight('#fff7e4','#667e6b',2.3));const sun=new T.DirectionalLight('#fff6d7',2.1);sun.position.set(-5,12,8);scene.add(sun);
 const grain=document.createElement('canvas');grain.width=512;grain.height=128;const gc=grain.getContext('2d');gc.fillStyle='#c6a576';gc.fillRect(0,0,512,128);for(let i=0;i<260;i++){gc.strokeStyle=i%2?'#f6d6a320':'#714e2d18';gc.beginPath();const y=i*.49;gc.moveTo(0,y);gc.bezierCurveTo(170,y+Math.sin(i)*3,350,y-Math.cos(i)*3,512,y);gc.stroke();}const woodTexture=new T.CanvasTexture(grain);woodTexture.colorSpace=T.SRGBColorSpace;
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z),boxGeo=new T.BoxGeometry(1,1,1),materials=new Map(),pickables=[],actors=new Map(),billboards=[];
+let jobWorkers=new Set();
 let frame=null,timer=null,lastFrame=0,frames=0,moving=null,paused=false,reports,focused='overview',ambient=null,ambientTimer=null,breakTimer=null,ambientTurn=0,workTimer=null,workUntil=0,workStarted=0;
 function mat(color){if(!materials.has(color))materials.set(color,new T.MeshLambertMaterial(['#c6a576','#b29361','#c5a779','#c1a77c'].includes(color)?{map:woodTexture}:{color}));return materials.get(color);}
 function box(color,x,y,z,w,h,d,parent=scene){const mesh=new T.Mesh(boxGeo,mat(color));mesh.position.set(x,y,z);mesh.scale.set(w,h,d);parent.add(mesh);return mesh;}
@@ -278,7 +279,6 @@ function updateTrip(time){if(!moving||paused)return;const m=moving,previous=m.ac
  const dx=m.actor.position.x-previous.x,dz=m.actor.position.z-previous.z;if(Math.hypot(dx,dz)>.0001)m.actor.rotation.y=Math.atan2(dx,dz);
  if(t>=1){m.actor.position.copy(m.to);if(m.kind==='report')settleReport(m.actor,m.to.distanceTo(reportDestination)<.001);else{m.actor.rotation.y=0;m.actor.userData.setWalking(false);}moving=null;m.done?.();}}
 // Occasional visual routines, never an AI task or a fabricated work result.
-let jobWorkers=new Set();
 window.addEventListener('office-jobs-updated',e=>{jobWorkers=new Set(e.detail.filter(s=>s.state==='working').map(s=>s.seat));if(ambient&&jobWorkers.has(ambient.employeeId))stopAmbient();invalidate();});
 function scheduleAmbient(delay=12000){clearTimeout(ambientTimer);ambientTimer=null;if(paused||document.hidden||reduced.matches)return;ambientTimer=setTimeout(()=>{ambientTimer=null;beginAmbient();},delay);}
 function settleAmbient(){if(!ambient)return;const e=employees.find(e=>e.id===ambient.employeeId);if(e?.standing)ambient.actor.userData.setStanding();else ambient.actor.userData.setWalking(false);ambient.actor.rotation.y=ambient.actor.userData.homeRotation||0;}
