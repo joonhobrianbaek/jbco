@@ -1,4 +1,4 @@
-import {readJobs,jobStates,writeDecision} from './jobs-source.js';
+import {readJobs,jobStates,writeDecision} from './jobs-source.js?v=2';
 const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n;};
 const open=el('button','작업 폴더');document.querySelector('.header-actions').append(open);
 const dialog=document.createElement('dialog');dialog.id='jobs-dialog';
